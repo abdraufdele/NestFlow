@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createWalletAdapter, isRejected, walletRequest, type WalletProvider } from './wallet';
+import { assertFundedTestAmount, createWalletAdapter, isRejected, walletRequest, type WalletProvider } from './wallet';
 const account = '0x1111111111111111111111111111111111111111';
 describe('M3 wallet boundary', () => {
   it('connects then switches then rereads identity, on every launch', async () => {
@@ -46,4 +46,10 @@ it('bounds stalled read RPC without treating a native dialog as cancelled', asyn
     await vi.advanceTimersByTimeAsync(15001);
     expect(failure).toMatchObject({ message: expect.stringContaining('Timed out') });
   } finally { vi.useRealTimers(); }
+});
+
+it('enforces the funded-test 5 USDT hard cap, including full-balance sentinels', () => {
+  expect(() => assertFundedTestAmount(0n)).not.toThrow();
+  expect(() => assertFundedTestAmount(5_000_000n)).not.toThrow();
+  for (const amount of [-1n, 5_000_001n, (1n << 256n) - 1n]) expect(() => assertFundedTestAmount(amount)).toThrow('5 USDT');
 });

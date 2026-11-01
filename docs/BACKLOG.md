@@ -129,3 +129,34 @@ Two signature options:
 The user asked to implement the simpler option, selecting A. Dragging changes only a local plan. Above-wallet targets indicate a separate withdrawal need; existing supplied funds never move on slider input. Zero/missing/error/stale/account-change states and reduced motion are covered by the M3 tests. Monetary calculations use existing bigint functions; normalized visual percentages alone use Number.
 
 Evidence and remaining assumptions: [M3 test results](m3-test-results.md). Earlier "choice pending" and no-implementation entries above are the historical planning baseline, superseded only for the explicit M3 scope.
+
+
+## M4 scope update — 2 November 2026
+
+Explicit user request authorizes only these M4 features despite the historical
+tier inventory. It does not pass funded-device tier gates or authorize mainnet.
+
+- Done: durable launch reconciliation, replacement-hash recovery and status UI;
+  unknown/pending blocks retry; approval remains separate after supply rejection.
+- Done: timestamped liquidity, paused/frozen and debt/collateral diagnostics;
+  manual payment-shortfall calculator; sourced independent-exit instructions.
+- Done: optional on-chain Aave WPOL/USDT estimate; net/break-even require all
+  fee estimates. Missing quote never prevents an eligible withdrawal.
+- Done: device-local spending preference and holding period in IndexedDB,
+  no addresses in the preference store; explicit reset retains the tx journal.
+- Done (small fix a): stale notice only after a connected session becomes stale;
+  a stale first read reports unavailable current balances instead.
+- Done (small fix b): friendly rejection text, raw 4001 retained in error logs.
+- Done (small fix c): Diagnostics link appears only in a Vite dev build.
+- Done: private funded-test switch documented with hard 5 USDT per-action cap;
+  remains off in this work and must remain off publicly.
+
+Evidence and limits: [M4 verification](m4-test-results.md).
+
+## Deferred polish
+
+- Use one short tagline instead of two.
+- Use a filled primary Connect button.
+- Make spacing consistent and visually review all screens.
+- Review the header logo against `docs/brand/` so it does not imitate a Nimiq mark;
+  do not redraw or alter existing assets without explicit authorization.

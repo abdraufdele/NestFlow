@@ -6,6 +6,7 @@ import 'fake-indexeddb/auto';
 import { resolveAaveConfig } from '../src/config/aave';
 import { poolAbi, tokenAbi } from '../src/config/abi';
 import { approve, supply, withdraw, readPosition, readAllowance } from '../src/lib/aave';
+import { readPolQuote } from '../src/lib/quote';
 import { openTxStore } from '../src/lib/txStore';
 import { MAX_UINT256 } from '../src/lib/math';
 
@@ -42,6 +43,8 @@ try {
   const client = createPublicClient({ chain: polygon, transport: http(local, { retryCount: 1, timeout: 30_000 }), cacheTime: 0 });
   const config = await resolveAaveConfig(client);
   console.log(`Verified Polygon config at fork block ${config.blockNumber}, reserve ${config.symbol}, decimals ${config.decimals}`);
+  const quote = await readPolQuote(client);
+  console.log(`Verified on-chain WPOL/USDT quote: ${quote.usdtPerPol} USDT base units/POL; block ${quote.blockNumber}; WPOL source ${quote.polSource}; USDT source ${quote.usdtSource}`);
   const result = spawnSync('forge', ['test', '--fork-url', local, '--match-path', 'test/PolygonFork.t.sol', '-vv'], {
     env: { ...process.env, FORK_USDT: config.underlying, FORK_ATOKEN: config.aToken, FORK_POOL: config.pool },
     encoding: 'utf8', windowsHide: true, timeout: 240_000,

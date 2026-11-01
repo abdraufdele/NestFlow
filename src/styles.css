@@ -114,3 +114,8 @@ footer p { font-size: 12px; color: var(--muted); margin: 0; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 @media (forced-colors: active) { * { scrollbar-color: auto; } .split-track, .split-track > span { border: 2px solid CanvasText; } }
+
+.exit-addresses dd, .recovery, .preview .warning { overflow-wrap: anywhere; }
+.exit-addresses > div { flex-wrap: wrap; }
+.panel ol, .panel ul { padding-inline-start: 1.3rem; }
+.panel li + li { margin-top: .75rem; }

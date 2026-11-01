@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { probe, bounded, readOnlyProvider } from './diagnostics';
+import { probe, bounded, readOnlyProvider, message } from './diagnostics';
 const account = '0x1111111111111111111111111111111111111111';
 describe('host diagnostics safety and failures', () => {
   it('shows missing injection without fabricating balances', async () => {
@@ -70,4 +70,14 @@ it('discards balances if the host changes account during reads', async () => {
   } });
   expect(rows.USDT).toContain('Account or chain changed');
   expect(rows.POL).toContain('Account or chain changed');
+});
+
+it('keeps rejection codes in logs and friendly text in diagnostic read errors', () => {
+  const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const error = { code: 4001, message: 'Rejected raw 4001' };
+  try {
+    expect(message(error)).toContain('declined');
+    expect(message(error)).not.toContain('4001');
+    expect(log).toHaveBeenCalledWith('Wallet request failed', error);
+  } finally { log.mockRestore(); }
 });

@@ -35,7 +35,7 @@ for (const [name, options, message] of [
   ['wrong chain', { wrongChain: true }, 'Wrong chain'],
   ['connect rejection', { rejectConnect: true }, 'Rejected'],
   ['switch rejection', { rejectSwitch: true }, 'Rejected'],
-  ['stale read', { stale: true }, 'Stale data'],
+  ['stale read', { stale: true }, 'Current balances unavailable'],
   ['failed read', { failedRead: true }, 'Failed'],
   ['wrong decimals', { decimals: 18 }, 'decimals'],
 ] as [string, MockOptions, string][]) test(name, async ({ page }) => {

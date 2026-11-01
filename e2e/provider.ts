@@ -1,29 +1,32 @@
-import type { Page } from '@playwright/test';
+import { test, type Page } from '@playwright/test';
 import { encodeFunctionResult, toFunctionSelector, type Abi } from 'viem';
-import { DOCUMENTED } from '../src/config/aave';
+import { quoteAbi } from '../src/lib/quote';
+import { DOCUMENTED, PRICE_ADDRESSES } from '../src/config/aave';
 import { providerAbi, poolAbi, tokenAbi, dataAbi } from '../src/config/abi';
 
 export interface MockOptions {
+  replacementMode?: 'repriced' | 'cancelled' | 'wrong-nonce';
   pol?: string; cash?: string; supplied?: string; allowance?: string;
   rejectConnect?: boolean; rejectSwitch?: boolean; wrongChain?: boolean; stale?: boolean;
   failedRead?: boolean; decimals?: number; paused?: boolean; frozen?: boolean;
   liquidity?: string; pending?: boolean; reverted?: boolean; rejectSend?: boolean;
-  simulationFailed?: boolean; lowPol?: boolean; noEvents?: boolean; slowRead?: boolean;
+  debtCollateral?: boolean; quoteUnavailable?: boolean; simulationFailed?: boolean; lowPol?: boolean; noEvents?: boolean; slowRead?: boolean;
 }
 export async function installProvider(page: Page, options: MockOptions = {}) {
   const ray = 10n ** 27n;
   const values: Record<string, unknown> = {
+    getPriceOracle: PRICE_ADDRESSES.oracle, BASE_CURRENCY: '0x0000000000000000000000000000000000000000', BASE_CURRENCY_UNIT: 100_000_000n, getSourceOfAsset: PRICE_ADDRESSES.oracle, getAssetPrice: 100_000_000n,
     getPool: DOCUMENTED.pool, getPoolDataProvider: DOCUMENTED.dataProvider, ADDRESSES_PROVIDER: DOCUMENTED.provider,
     getReservesList: [DOCUMENTED.underlying], getReserveTokensAddresses: [DOCUMENTED.aToken, DOCUMENTED.variableDebtToken, DOCUMENTED.variableDebtToken],
     decimals: options.decimals ?? 6, symbol: 'USDT0', UNDERLYING_ASSET_ADDRESS: DOCUMENTED.underlying, POOL: DOCUMENTED.pool,
     getReserveConfigurationData: [6n, 0n, 0n, 0n, 0n, false, true, false, true, options.frozen ?? false],
     getPaused: options.paused ?? false, getReserveCaps: [0n, 0n],
     getReserveData: [0n, 0n, 100_000_000n, 0n, 0n, ray / 20n, 0n, 0n, 0n, ray, 0n, 0n],
-    getReserveNormalizedIncome: ray, getUserAccountData: [0n, 0n, 0n, 0n, 0n, 10n ** 30n],
+    getReserveNormalizedIncome: ray, getUserAccountData: [100_000_000n, options.debtCollateral ? 50_000_000n : 0n, 0n, 0n, 0n, 10n ** 30n],
     approve: true, supply: undefined, withdraw: 1n,
   };
   const replies: Record<string, { name: string; value: string }> = {};
-  for (const abi of [providerAbi, poolAbi, tokenAbi, dataAbi] as Abi[]) {
+  for (const abi of [providerAbi, poolAbi, tokenAbi, dataAbi, quoteAbi] as Abi[]) {
     for (const item of abi) {
       if (item.type !== 'function') continue;
       const name = item.name;
@@ -80,15 +83,20 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
           return '0x186a0';
         }
         if (method === 'eth_maxPriorityFeePerGas' || method === 'eth_gasPrice') return '0x77359400';
-        if (method === 'eth_getTransactionByHash') return tx;
+        if (method === 'eth_getTransactionByHash') {
+          const requested = (params as string[])[0];
+          return requested === '0x' + 'c'.repeat(64) ? { ...tx, hash: requested, nonce: options.replacementMode === 'wrong-nonce' ? '0x1' : tx.nonce, input: options.replacementMode === 'cancelled' ? '0x' : tx.input } : tx;
+        }
         if (method === 'eth_getTransactionReceipt') {
-          if (state.pending) return null;
-          return { transactionHash: hash, transactionIndex: '0x0', blockHash, blockNumber: '0x64', from: account, to: addresses.pool, cumulativeGasUsed: '0x186a0', gasUsed: '0x186a0', contractAddress: null, logs: [], logsBloom: '0x' + '0'.repeat(512), status: options.reverted ? '0x0' : '0x1', effectiveGasPrice: '0x77359400', type: '0x0' };
+          const requested = (params as string[])[0];
+          if (state.pending && requested !== '0x' + 'c'.repeat(64)) return null;
+          return { transactionHash: requested, transactionIndex: '0x0', blockHash, blockNumber: '0x64', from: account, to: addresses.pool, cumulativeGasUsed: '0x186a0', gasUsed: '0x186a0', contractAddress: null, logs: [], logsBloom: '0x' + '0'.repeat(512), status: options.reverted ? '0x0' : '0x1', effectiveGasPrice: '0x77359400', type: '0x0' };
         }
         if (method === 'eth_call' || method === 'eth_sendTransaction') {
           const call = (params as { data: string; to: string }[])[0]; const entry = replies[call.data.slice(0, 10)];
           if (!entry) throw new Error('Unsupported mock call ' + call.data);
           if (state.slowRead && method === 'eth_call') await new Promise(r => setTimeout(r, 600));
+          if (options.quoteUnavailable && entry.name === 'getPriceOracle') throw new Error('Quote unavailable');
           if (state.failedRead && method === 'eth_call') throw new Error('RPC unavailable');
           const words = call.data.slice(10).match(/.{64}/g) ?? [];
           if (method === 'eth_sendTransaction') {
@@ -103,9 +111,10 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
             tx.input = call.data; tx.to = call.to; return hash;
           }
           if (options.simulationFailed && ['supply', 'withdraw'].includes(entry.name)) throw new Error('Simulation reverted');
+          if (entry.name === 'getAssetPrice') return tuple(call.data.slice(-40).toLowerCase() === '0d500b1d8e8ef31e21c99d1db9a6444d3adf1270' ? 25_000_000n : 100_000_000n);
           if (entry.name === 'balanceOf') return tuple(call.data.slice(-40).toLowerCase() === addresses.aToken.slice(2).toLowerCase() ? options.liquidity ?? '1000000000' : state.cash);
           if (entry.name === 'allowance') return tuple(state.allowance);
-          if (entry.name === 'getUserReserveData') return tuple(state.supplied, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n);
+          if (entry.name === 'getUserReserveData') return tuple(state.supplied, 0n, 0n, 0n, 0n, 0n, 0n, 0n, options.debtCollateral ? 1n : 0n);
           return entry.value;
         }
         throw new Error('Unsupported mock method ' + method);
@@ -118,3 +127,11 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
     } });
   }, { options, replies, addresses: DOCUMENTED });
 }
+
+test.afterEach(async ({ page }, info) => {
+  if (info.status === info.expectedStatus) return;
+  console.log('Mock failure state', await page.evaluate(() => {
+    const state = (window as unknown as { mockState?: { calls: string[]; writes: number } }).mockState;
+    return { calls: state?.calls.slice(-15), writes: state?.writes, status: document.querySelector('[role="status"]')?.textContent };
+  }).catch(() => 'page unavailable'));
+});

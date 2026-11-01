@@ -28,7 +28,7 @@ Sources checked 2026-11-01:
 - [ ] Use an account with no position: verify observed zero, distinct from a failed read. A supplied balance does not prove withdrawability.
 - [ ] Select a different EVM chain using the host if available; refresh: wrong-chain message, no Polygon balances. Request Polygon, reject once and record error, then accept and refresh. If host cannot switch chains, record that limitation, do not mark passed.
 - [ ] Use an account with USDT and zero POL: refresh shows Missing POL. A nonzero POL balance alone does not prove enough gas. Do not attempt a transaction for this test.
-- [ ] Tap Request test signature; reject the harmless plain message in the native dialog. Record visible error/code (often 4001; actual host behavior decides). This is message signing, not an approval or transaction. A timeout does not cancel a pending native dialog: dismiss it before retrying.
+- [ ] Tap Request test signature; reject the harmless plain message in the native dialog. Record the friendly visible error and the original code from console logs (often 4001; actual host behavior decides). This is message signing, not an approval or transaction. A timeout does not cancel a pending native dialog: dismiss it before retrying.
 - [ ] Disable connectivity or block RPC: failed calls/timeouts are visible independently; a failed Aave read must not become zero. Restore and refresh.
 - [ ] Change account/chain during reads and after results: events, if emitted, clear results; refresh rechecks identity. Hosts without events require manual refresh. Verify the displayed account matches the snapshot before interpreting balances.
 - [ ] Background/reopen the app and reload `/diagnostics`; repeat refresh. Record observed differences. No transaction recovery screen is implemented in M2.
@@ -69,3 +69,57 @@ No funded device sends were authorized or performed for M3. The current wallet h
 - [ ] Insufficient POL on a real send: verify actual host error and no misleading completion.
 
 Before these checks, obtain separate written authorization for exact account, Polygon 137, token/Pool, maximum USDT and POL budget. Do not infer authorization from funding or this checklist.
+
+
+## M4 private funded-build switch — remains OFF
+
+`VITE_ENABLE_FUNDED_TEST_SENDS` is the exact build-time flag. Unset or any value
+other than the string `true` disables real sends. We have not enabled it or sent
+any mainnet transaction for M4. Funding does not itself authorize or enable sends.
+
+After separately authorizing the exact funded test in M01 above, an operator
+controlling a private build may run this in PowerShell in the project directory:
+
+```powershell
+$env:VITE_ENABLE_FUNDED_TEST_SENDS = 'true'
+npm run build
+Remove-Item Env:VITE_ENABLE_FUNDED_TEST_SENDS
+```
+
+Serve that artifact only at the operator-controlled private test URL. The adapter
+uses `execution: 'explicit-mainnet'` in this explicitly enabled private build.
+The adapter enforces a hard cap of **5 USDT (5_000_000 base units) per action**
+for approval, supply and withdrawal; zero-reset approval remains separate.
+This is a per-action cap, not a cumulative session or POL-fee cap. Specify and
+review the POL fee budget separately in the written authorization and native
+wallet dialogs. No unlimited/full-balance sentinel bypasses this cap.
+
+The flag **must be OFF in the public deployment**. Remove it from the public
+host's build environment and all applicable `.env*` files (or set it to `false`),
+then run `npm run build` to replace the private artifact. Removing an environment
+variable after building does not disable an already-built private artifact:
+Vite embeds the value at build time. Do not upload that private artifact publicly.
+Run `npm run test:e2e:production -- --reporter=line` on the normal build and verify
+that approve/supply/withdraw stay disabled and no `eth_sendTransaction` is called.
+The e2e mock build is separate and still requires Anvil on both transports.
+
+### Funded M4 recovery walkthrough — deferred, NOT RUN
+
+1. Reopen with no remembered identity: connect, switch from observed 0x1 to
+   Polygon, then re-read state and reconcile saved receipts before any action.
+2. Approve an explicitly authorized amount <=5 USDT; wait for confirmation and
+   allowance reread. Reject the separate supply request: UI says the request was
+   declined without exposing 4001; logs retain the original error/code. No supply
+   must appear; approval remains separate. Do not retry before reconciliation.
+3. With separately authorized pending approval/supply/withdraw, reload. Record
+   the receipt and status; unknown/pending must block duplicate sends. If speed-up
+   or cancellation is used, paste its hash into Reconcile replacement; mismatched
+   sender/nonce must fail and keep the lock. Wait for canonical confirmation.
+4. Review paused/frozen/liquidity/debt and simulation diagnostics, each stamped
+   Checks passed/failed as of its observation. A passing check is not a promise.
+5. Manually enter a payment amount; compare with confirmed wallet funds, review
+   any proposed withdrawal, then perform a later payment separately outside
+   NestFlow. No payment detection or payment-send action exists in NestFlow.
+6. Follow `/independent-exit` through Aave with the same account and Polygon V3;
+   compare the token, Pool and aToken against `src/config/aave.ts` and its links.
+   This access route is not verified on the installed host. Never export a seed.

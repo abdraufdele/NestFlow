@@ -1,4 +1,4 @@
-import { walletRequest, type WalletProvider } from './wallet';
+import { isRejected, walletRequest, type WalletProvider } from './wallet';
 import { createPublicClient, custom, formatUnits, isAddress, type Address } from 'viem';
 import { polygon } from 'viem/chains';
 import { DOCUMENTED, resolveAaveConfig } from '../config/aave';
@@ -7,6 +7,7 @@ import { readPosition } from './aave';
 export type Provider = WalletProvider;
 export type Rows = Record<string, string>;
 export function message(error: unknown): string {
+  if (isRejected(error)) { console.error('Wallet request failed', error); return 'Rejected. The wallet request was declined. You can choose to try again.'; }
   const e = error as { message?: string; code?: unknown } | null;
   return `${e?.code === undefined ? '' : `Code ${String(e.code)}: `}${e?.message ?? String(error)}`;
 }

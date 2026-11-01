@@ -62,3 +62,19 @@ export async function resolveAaveConfig(client: PublicClient): Promise<AaveConfi
   return { chainId: 137, provider: DOCUMENTED.provider, pool, dataProvider, underlying,
     aToken: tokens[0], variableDebtToken: tokens[2], decimals: 6, symbol, blockNumber, timestamp: block.timestamp };
 }
+
+/** Read-only pricing anchors, checked against the Aave registry on 2026-11-02.
+ * https://aave.com/docs/aave-v3/smart-contracts/oracles
+ * https://github.com/aave-dao/aave-address-book/blob/main/src/ts/AaveV3Polygon.ts
+ * WPOL wraps native Polygon gas currency. Resolve oracle through provider each time.
+ */
+export const PRICE_ADDRESSES = {
+  oracle: '0xb023e699F5a33916Ea823A16485e259257cA8Bd1',
+  wpol: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+} as const satisfies Record<string, Address>;
+export const AAVE_SOURCES = {
+  addresses: 'https://aave.com/docs/resources/addresses',
+  registry: 'https://github.com/aave-dao/aave-address-book/blob/main/src/ts/AaveV3Polygon.ts',
+  withdrawal: 'https://aave.com/help/supplying/withdraw-tokens',
+  oracle: 'https://aave.com/docs/aave-v3/smart-contracts/oracles',
+} as const;

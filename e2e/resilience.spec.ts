@@ -84,8 +84,8 @@ test('tiny earnings warning and keyboard reduced-motion screenshot', async ({ pa
   await page.getByLabel('Holding period (days)').fill('1');
   await page.getByRole('button', { name: 'Preview supply' }).click();
   await expect(page.getByText(/Estimated earnings are negligible/)).toBeVisible();
-  await expect(page.getByText(/Net earnings and fee break-even are unavailable/)).toBeVisible();
-  await page.screenshot({ path: 'docs/m3-mobile.png', fullPage: true });
+  await expect(page.getByText(/Net return estimate: Unavailable/)).toBeVisible();
+  await page.screenshot({ path: 'docs/m4-mobile.png', fullPage: true });
   await page.getByLabel('Spending preference slider').focus(); await page.keyboard.press('ArrowRight');
   expect(await page.getByLabel('Spending preference slider').evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
   expect(await page.evaluate(() => getComputedStyle(document.querySelector('.split-track > span')!).transitionDuration)).toBe('0s');
@@ -96,8 +96,9 @@ test('desktop layout and diagnostic sibling load without browser errors', async 
   await page.setViewportSize({ width: 1280, height: 900 });
   await installProvider(page); await page.goto('/');
   await expect(page.getByText('Confirmed balances')).toBeVisible();
-  await page.screenshot({ path: 'docs/m3-desktop.png', fullPage: true });
-  await page.getByRole('link', { name: 'Diagnostics', exact: true }).click();
+  await page.screenshot({ path: 'docs/m4-desktop.png', fullPage: true });
+  await expect(page.getByRole('link', { name: 'Diagnostics', exact: true })).toHaveCount(0);
+  await page.goto('/diagnostics');
   await expect(page.getByRole('heading', { name: /NestFlow host diagnostics/ })).toBeVisible();
   expect(errors).toEqual([]);
 });

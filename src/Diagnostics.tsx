@@ -1,4 +1,4 @@
-import { walletRequest } from './lib/wallet';
+import { isRejected, walletRequest } from './lib/wallet';
 import { useEffect, useRef, useState } from 'react';
 import { init } from '@nimiq/mini-app-sdk';
 import { bounded, message, probe, type Provider, type Rows } from './lib/diagnostics';
@@ -45,7 +45,7 @@ export function Diagnostics() {
       }
       await bounded(walletRequest(provider, { method, ...(params ? { params } : {}) }), 60000);
       setAction(`${method}: completed. Refresh to observe current state.`);
-    } catch (e) { setAction(`${method}: ${message(e)}`); }
+    } catch (e) { console.error('Wallet request failed', e); setAction(isRejected(e) ? 'Rejected. The wallet request was declined. You can choose to try again.' : `${method}: ${message(e)}`); }
     finally { setBusy(false); }
   }
   return <main>

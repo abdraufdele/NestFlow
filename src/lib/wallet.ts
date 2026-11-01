@@ -3,6 +3,7 @@ import { polygon } from 'viem/chains';
 import { resolveAaveConfig } from '../config/aave';
 import { poolAbi, tokenAbi } from '../config/abi';
 import { approve, supply, withdraw, readPosition, readReserveState, readAllowance, estimatePolCost, checkWithdrawEligibility } from './aave';
+import { readPolQuote, type OracleQuote } from './quote';
 import { openTxStore, type TxAction, type TxRecord } from './txStore';
 
 /** Shared EIP-1193 boundary for the installed host and test transports. */
@@ -48,18 +49,24 @@ export interface WalletAdapter {
   read(account: Address): Promise<{
     account: Address; config: Awaited<ReturnType<typeof resolveAaveConfig>>;
     position: Awaited<ReturnType<typeof readPosition>>; reserve: Awaited<ReturnType<typeof readReserveState>>;
-    allowance: bigint; record?: TxRecord;
+    allowance: bigint; record?: TxRecord; quote?: OracleQuote;
   }>;
+  replacement(account: Address, hash: Hash): Promise<TxRecord | undefined>;
   fees(account: Address, amount: bigint, allowance: bigint): Promise<FeePreview>;
   eligibility(account: Address, amount: bigint): ReturnType<typeof checkWithdrawEligibility>;
   transact(action: TxAction, amount: bigint, account: Address, submitted: (hash: Hash) => void): Promise<TxRecord | undefined>;
   sign(account: Address, message: string): Promise<unknown>;
   subscribe(invalidate: () => void): () => void;
 }
+export function assertFundedTestAmount(amount: bigint) {
+  if (amount < 0n || amount > 5_000_000n) throw new Error('Funded test is capped at 5 USDT per action.');
+}
 export function createWalletAdapter(provider: WalletProvider, options: { localTest?: boolean; pollMs?: number; polls?: number } = {}): WalletAdapter {
-  // A production/development build cannot enable sends. E2E mode still requires
-  // the existing M1 Anvil checks on BOTH transports before every send.
-  const transactionsEnabled = import.meta.env.MODE === 'e2e' && options.localTest === true;
+  // Real sends require an explicit private build opt-in; public builds default off.
+  // E2E mode still verifies Anvil on both transports before every send.
+  const localExecution = import.meta.env.MODE === 'e2e' && options.localTest === true;
+  const fundedBuild = import.meta.env.VITE_ENABLE_FUNDED_TEST_SENDS === 'true';
+  const transactionsEnabled = localExecution || fundedBuild;
   const transport = { request: (args: { method: string; params?: unknown }) => walletRequest(provider, args) };
   const client = createPublicClient({ chain: polygon, transport: custom(transport, { retryCount: 0 }), cacheTime: 0, pollingInterval: 500 });
   const wallet = injectedWallet(transport as EIP1193Provider);
@@ -87,15 +94,24 @@ export function createWalletAdapter(provider: WalletProvider, options: { localTe
     identity,
     async read(account) {
       await assertAccount(account);
+      const record = await (await store()).reconcile(client, account, 137);
       const config = await resolveAaveConfig(client);
       const position = await readPosition(client, config, account);
       const [reserve, allowance] = await Promise.all([
         readReserveState(client, config, position.blockNumber), readAllowance(client, config, account, position.blockNumber),
       ]);
-      const record = await (await store()).reconcile(client, account, 137);
+      const quote = await readPolQuote(client).catch(() => undefined);
       await assertAccount(account);
       if (Date.now() - Number(position.timestamp) * 1000 > 60_000) throw new Error('Stale data. Refresh before continuing.');
-      return { account, config, position, reserve, allowance, record };
+      return { account, config, position, reserve, allowance, record, quote };
+    },
+    async replacement(account, hash) {
+      await assertAccount(account);
+      const journal = await store();
+      await journal.reconcile(client, account, 137);
+      const result = await journal.reconcileReplacement(client, account, 137, hash);
+      await assertAccount(account);
+      return result;
     },
     async fees(account, amount, allowance) {
       await assertAccount(account);
@@ -121,9 +137,10 @@ export function createWalletAdapter(provider: WalletProvider, options: { localTe
     },
     async transact(action, amount, account, submitted) {
       if (!transactionsEnabled) throw new Error('Mainnet transactions disabled. Not verified on device.');
+      if (!localExecution) assertFundedTestAmount(amount);
       await assertAccount(account);
       const journal = await store();
-      const context = { client, wallet, account, store: journal, execution: 'local-fork' as const };
+      const context = { client, wallet, account, store: journal, execution: localExecution ? 'local-fork' as const : 'explicit-mainnet' as const };
       const hash = await ({ approve, supply, withdraw })[action](context, amount);
       submitted(hash);
       for (let i = 0; i < (options.polls ?? 12); i++) {

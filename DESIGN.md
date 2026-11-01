@@ -1,6 +1,6 @@
 # NestFlow design context
 ## Product and audience
-An independent Nimiq Pay mini-app for discretionary Polygon USDT. The page helps users compare keeping funds in the wallet with supplying to Aave V3. The current user request authorizes M3 only. See AGENTS.md, docs/PLAN.md and docs/plans/m3-ui.md.
+An independent Nimiq Pay mini-app for discretionary Polygon USDT. The page helps users compare keeping funds in the wallet with supplying to Aave V3. The current user request authorizes M4 recovery, diagnostics and decision features. Deferred visual polish stays in docs/BACKLOG.md. See AGENTS.md, docs/PLAN.md and docs/plans/m3-ui.md.
 ## North Star
 A clear allocation worksheet: the live gold/teal split is the main interaction; confirmed balances are always separate. Quiet supporting surfaces and explicit costs keep the decision legible on a phone.
 ## Visual register and anti-references
@@ -13,3 +13,6 @@ Trebuchet MS for rounded headings/body with Segoe UI fallback; Segoe UI for smal
 Native labeled text/range controls, numeric keyboard, visible focus, error association and text equivalents. Split motion is a 150ms local preview only; reduced motion removes transitions/animation. No interaction sends automatically. Status and recovery remain inline.
 ## Verification
 Project checks and screenshots are recorded in docs/m3-test-results.md. Playwright covers narrow layout, keyboard, reduced motion, offline/error/stale and pending states. A full screen-reader and installed-device M3 audit remains unverified.
+
+## M4 extensions
+Reuse existing panels, form controls, status and tokens for manual shortfall and recovery. Independent exit is available without a connection at /independent-exit. Timestamped checks describe only the observed amount; no blanket safety badge. Preferences contain only device-local planning inputs. Diagnostics link is dev-only. M4 screenshots and verification are in docs/m4-test-results.md.
