@@ -44,9 +44,9 @@ Job: decide whether supplying is worthwhile after costs, retain a chosen wallet 
 - Diagnostics: account position, reserve state, liquidity, debt/collateral, gas and simulation where supported. Show observation block/time and specific reasons. Successful checks do not ensure future execution.
 - Independent exit: verified instructions for the exact market/account through compatible alternative access. Mark unverified routes; never require seed export or an additional integrated wallet provider.
 
-## Signature interaction: choice pending
+## Signature interaction: M3 selection
 
-Live visual splits USDT between "in wallet" and "earning" and responds to the spending preference. BACKLOG.md contains option A (split bar) and B (paired vessels). Wait for the user's choice and T1 authorization.
+Live visual splits USDT between "in wallet" and "earning" and responds to the spending preference. BACKLOG.md contains option A (split bar) and B (paired vessels). The explicit 1 November 2026 M3 request selects the simpler option A and authorizes its M3 implementation; this does not assert funded-device tier completion. See docs/m3-test-results.md.
 
 Show confirmed balances separately from "after proposed supply" preview. A slider cannot reallocate an existing supplied position. Raising the wallet target above current wallet funds can indicate withdrawal need; it does not move funds. No transaction on dragging. Handle zero total, stale/missing reads, invalid/out-of-range values and account changes. Provide numeric/keyboard input, text equivalents and reduced motion. Financial amounts stay bigint; normalized proportions are display-only. No fabricated earnings animation.
 

@@ -117,3 +117,15 @@ Milestones below are conceptual classification only. Never schedule blocked reco
 ## Future verification record
 
 For every implemented feature record: feature/tier; test command or review walkthrough; expected/observed result; failure cases; local/fork/device/mainnet environment; verified facts; remaining assumptions; evidence reference. No app, fork, device or mainnet checks have run. Signature choice, tier confirmation and mainnet authorization are separate decisions.
+
+## M3 scope update — 1 November 2026
+
+The explicit M3 request authorizes the listed UI, existing-position reads, spending preference and signature interaction without asserting funded-device T0/T1 completion. Other milestones and unlisted tiers remain deferred.
+
+Two signature options:
+- **A — split bar (selected and implemented):** labelled gold "in wallet" and teal "earning" segments, exact numeric balances, numeric target input plus keyboard slider. Confirmed balances occupy their own panel; the bar is explicitly "After proposed supply".
+- **B — paired vessels (deferred):** two flat containers with normalized fill levels and the same exact labels/input. More drawing and edge-case layout work, with less precise visual comparison.
+
+The user asked to implement the simpler option, selecting A. Dragging changes only a local plan. Above-wallet targets indicate a separate withdrawal need; existing supplied funds never move on slider input. Zero/missing/error/stale/account-change states and reduced motion are covered by the M3 tests. Monetary calculations use existing bigint functions; normalized visual percentages alone use Number.
+
+Evidence and remaining assumptions: [M3 test results](m3-test-results.md). Earlier "choice pending" and no-implementation entries above are the historical planning baseline, superseded only for the explicit M3 scope.

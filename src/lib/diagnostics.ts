@@ -1,9 +1,10 @@
+import { walletRequest, type WalletProvider } from './wallet';
 import { createPublicClient, custom, formatUnits, isAddress, type Address } from 'viem';
 import { polygon } from 'viem/chains';
 import { DOCUMENTED, resolveAaveConfig } from '../config/aave';
 import { tokenAbi } from '../config/abi';
 import { readPosition } from './aave';
-export interface Provider { request(args: { method: string; params?: unknown }): Promise<unknown> }
+export type Provider = WalletProvider;
 export type Rows = Record<string, string>;
 export function message(error: unknown): string {
   const e = error as { message?: string; code?: unknown } | null;
@@ -19,7 +20,7 @@ const reads = new Set(['eth_chainId', 'eth_accounts', 'eth_getBalance', 'eth_cal
 export function readOnlyProvider(provider: Provider): Provider {
   return { request: async args => {
     if (!reads.has(args.method)) throw new Error(`Read-only probe blocked ${args.method}`);
-    return bounded(Promise.resolve().then(() => provider.request(args)));
+    return bounded(Promise.resolve().then(() => walletRequest(provider, args)));
   } };
 }
 export async function probe(injected?: Provider): Promise<Rows> {
@@ -38,7 +39,7 @@ export async function probe(injected?: Provider): Promise<Rows> {
   await Promise.all([
     (async () => {
       try {
-        const chain = await provider.request({ method: 'eth_chainId' });
+        const chain = await walletRequest(provider, { method: 'eth_chainId' });
         if (typeof chain !== 'string' || !/^0x[0-9a-f]+$/i.test(chain)) throw new Error('Invalid chainId response');
         polygonChain = BigInt(chain) === 137n;
         rows.chainId = `${chain} (${BigInt(chain)})${polygonChain ? ' Polygon' : ' — Wrong chain: Polygon 137 required; reads blocked'}`;
@@ -47,7 +48,7 @@ export async function probe(injected?: Provider): Promise<Rows> {
     })(),
     (async () => {
       try {
-        const accounts = await provider.request({ method: 'eth_accounts' });
+        const accounts = await walletRequest(provider, { method: 'eth_accounts' });
         if (!Array.isArray(accounts) || !accounts.every(a => typeof a === 'string' && isAddress(a))) throw new Error('Invalid accounts response');
         account = accounts[0];
         rows.accounts = accounts.length ? `${accounts.join(', ')} (reading first account)` : 'Disconnected: no authorized accounts; use Connect';
@@ -75,7 +76,7 @@ export async function probe(injected?: Provider): Promise<Rows> {
   ]);
   // Hosts need not emit events. Recheck identity before publishing any balances.
   try {
-    const [chain, accounts] = await Promise.all([provider.request({ method: 'eth_chainId' }), provider.request({ method: 'eth_accounts' })]);
+    const [chain, accounts] = await Promise.all([walletRequest(provider, { method: 'eth_chainId' }), walletRequest(provider, { method: 'eth_accounts' })]);
     if (typeof chain !== 'string' || BigInt(chain) !== 137n || !Array.isArray(accounts) || accounts[0]?.toLowerCase() !== selected.toLowerCase()) throw new Error('Account or chain changed during reads; refresh');
   } catch (e) {
     for (const key of ['USDT', 'POL', 'position']) rows[key] = `Unavailable: ${message(e)}`;

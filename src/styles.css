@@ -1,0 +1,116 @@
+/* Identity samples: docs/brand/BRAND.md. Semantic colors are UI additions. */
+:root {
+  --brand-teal: #027f7b; --brand-gold: #eeb346; --brand-ink: #08282b;
+  --paper: #f5f8f6; --surface: #ffffff; --muted: #496369; --line: #cad9d6;
+  --tint: #e8f3ef; --warning-bg: #fff2d5; --warning-ink: #64440c;
+  --danger: #9a3028; --focus: #114fbd; --scrollbar-thumb: #658b87;
+  --scrollbar-track: #e8f3ef; --scrollbar-hover: #027f7b; --scrollbar-active: #08282b;
+  --radius: 18px; --space: 24px;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif; color: var(--brand-ink); background: var(--paper);
+  font-synthesis: none; line-height: 1.55; scrollbar-gutter: stable;
+}
+* { box-sizing: border-box; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); scrollbar-width: auto; }
+*::-webkit-scrollbar { width: 12px; height: 12px; }
+*::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+*::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border: 3px solid var(--scrollbar-track); border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+*::-webkit-scrollbar-thumb:active { background: var(--scrollbar-active); }
+body { margin: 0; } button, input { font: inherit; }
+a { color: var(--brand-teal); text-underline-offset: 4px; cursor: pointer; }
+a:hover { text-decoration-thickness: 2px; }
+a:active { opacity: .8; }
+button { min-height: 48px; padding: 12px 22px; border: 1px solid var(--brand-teal); border-radius: 10px; background: var(--brand-teal); color: var(--surface); font-weight: 700; cursor: pointer; }
+button:hover:enabled { background: var(--brand-ink); border-color: var(--brand-ink); }
+button:active:enabled { transform: translateY(1px); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.secondary { color: var(--brand-teal); background: var(--surface); }
+button.secondary:hover:enabled { color: var(--surface); background: var(--brand-teal); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+.masthead { background: var(--brand-ink); color: var(--surface); display: flex; align-items: center; gap: 16px; padding: 18px max(20px, calc((100vw - 1120px) / 2)); }
+.masthead img { display: block; background: var(--surface); border-radius: 16px; }
+.eyebrow { font: 700 11px/1.4 "Segoe UI", sans-serif; letter-spacing: .14em; }
+.masthead .eyebrow { color: var(--brand-gold); }
+.brand-title { margin: 4px 0 0; font-size: 15px; }
+.diagnostics-link { color: var(--surface); margin-left: auto; font-size: 13px; min-height: 44px; display: flex; align-items: center; }
+main { max-width: 1120px; margin: auto; padding: 0 20px; }
+.intro { padding: 42px 0 24px; max-width: 700px; }
+h1 { font-size: clamp(36px, 6vw, 58px); line-height: 1.08; letter-spacing: -.045em; margin: 14px 0 20px; }
+h2 { font-size: 23px; line-height: 1.25; letter-spacing: -.025em; margin: 6px 0 16px; }
+h3 { font-size: 22px; margin: 12px 0; }
+p { margin: 10px 0 16px; }
+.intro > p { font-size: 18px; color: var(--muted); max-width: 530px; }
+.connection { border-top: 1px solid var(--line); padding: 24px 0 12px; display: flex; gap: 20px; align-items: start; justify-content: space-between; }
+.connection h2 { font-size: 18px; margin: 0; }
+.account { overflow-wrap: anywhere; font: 13px/1.6 "Segoe UI", sans-serif; max-width: 48ch; color: var(--muted); }
+.status { min-height: 56px; padding: 14px 16px; background: var(--tint); border-left: 3px solid var(--brand-teal); overflow-wrap: anywhere; font-size: 14px; }
+.loading-dot { display: inline-block; width: 10px; height: 10px; background: var(--brand-teal); border-radius: 50%; margin-right: 10px; animation: pulse 1s ease-in-out infinite alternate; }
+.dev-note { font-size: 12px; color: var(--muted); margin-bottom: 26px; }
+.balance-sheet { background: var(--brand-ink); color: var(--surface); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+.section-top { display: flex; align-items: start; gap: 12px; justify-content: space-between; }
+.section-top h2 { font-size: 17px; }
+.tag { font-size: 10px; color: var(--brand-gold); border: 1px solid var(--brand-gold); padding: 4px 8px; border-radius: 5px; white-space: nowrap; }
+.balances { display: grid; gap: 24px; margin: 12px 0 22px; }
+.balances p { font-size: 14px; margin: 0 0 6px; }
+.balances strong { display: block; font-size: clamp(26px, 4vw, 36px); letter-spacing: -.035em; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.balances span { display: block; font-size: 12px; margin-top: 5px; }
+.caption { font: 12px/1.65 "Segoe UI", sans-serif; color: var(--muted); }
+.balance-sheet > .caption { color: var(--line); margin-bottom: 0; }
+.workspace { display: grid; align-items: start; gap: 24px; }
+.panel { padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); min-width: 0; }
+.panel > .eyebrow { color: var(--brand-teal); }
+.panel > p { color: var(--muted); font-size: 15px; }
+fieldset { border: 0; padding: 0; margin: 22px 0 0; min-width: 0; }
+label { display: block; font-size: 14px; font-weight: 700; margin: 18px 0 8px; }
+input:not([type=range]) { display: block; width: 100%; min-height: 52px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--surface); color: var(--brand-ink); font-variant-numeric: tabular-nums; }
+input[aria-invalid=true] { border-color: var(--danger); }
+.amount-field { position: relative; }
+.amount-field input { padding-right: 68px; font-size: 24px; }
+.amount-field > span { position: absolute; right: 16px; top: 18px; font-size: 12px; color: var(--muted); pointer-events: none; }
+.field-error { min-height: 22px; margin: 4px 0 12px; font-size: 13px; color: var(--danger); }
+.range { width: 100%; min-height: 44px; cursor: pointer; accent-color: var(--brand-teal); margin: 4px 0 14px; }
+.split-caption { display: flex; justify-content: space-between; gap: 14px; font-size: 12px; }
+.split-caption span:last-child { color: var(--muted); font-size: 10px; letter-spacing: .08em; }
+.split-track { height: 30px; background: var(--brand-teal); border: 1px solid var(--brand-ink); border-radius: 8px; overflow: hidden; margin: 12px 0; }
+.split-track > span { display: block; height: 100%; background: var(--brand-gold); border-right: 2px solid var(--surface); transition: width .15s ease-out; }
+.split-values { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
+.split-values strong { display: block; margin-top: 4px; font-size: 20px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.key { font-size: 12px; }
+.key::before { content: ''; display: inline-block; width: 8px; height: 8px; border: 1px solid var(--brand-ink); border-radius: 50%; margin-right: 6px; }
+.wallet-key::before { background: var(--brand-gold); }
+.earning-key::before { background: var(--brand-teal); }
+fieldset > button { width: 100%; }
+.preview { margin-top: 30px; padding-top: 26px; border-top: 2px solid var(--brand-ink); }
+.preview-amount { font-size: 32px; font-weight: 700; letter-spacing: -.03em; }
+.details { font-size: 13px; }
+.details > div { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.warning { padding: 14px; border-radius: 10px; color: var(--warning-ink); background: var(--warning-bg); font-size: 13px; overflow-wrap: anywhere; }
+.success { background: var(--tint); color: var(--brand-ink); padding: 14px; border-radius: 10px; font-size: 13px; }
+.transaction-step { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px; font-size: 14px; }
+.step-label { font: 700 11px "Segoe UI", sans-serif; letter-spacing: .12em; }
+.transaction-step > button { width: 100%; }
+#withdraw-result { margin-top: 24px; min-height: 100px; }
+footer { display: flex; align-items: center; gap: 14px; padding: 36px 0; }
+footer p { font-size: 12px; color: var(--muted); margin: 0; }
+.skip-link { position: absolute; left: 20px; top: -100px; background: var(--surface); padding: 12px; z-index: 2; }
+.skip-link:focus { top: 12px; }
+@keyframes pulse { to { opacity: .35; } }
+@media (min-width: 760px) {
+  .balances { grid-template-columns: 1fr 1fr; }
+  .balances > div + div { border-left: 1px solid var(--muted); padding-left: 28px; }
+  .workspace { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  .panel, .balance-sheet { padding: 30px; }
+}
+@media (max-width: 420px) {
+  .masthead { gap: 10px; padding: 14px 16px; }
+  .masthead img { width: 48px; height: 48px; }
+  .brand-title { font-size: 12px; }
+  .masthead .eyebrow { font-size: 9px; }
+  .diagnostics-link { font-size: 11px; }
+  main { padding: 0 16px; }
+  .connection { flex-direction: column; gap: 8px; }
+  .connection > button { width: 100%; }
+  .panel, .balance-sheet { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+@media (forced-colors: active) { * { scrollbar-color: auto; } .split-track, .split-track > span { border: 2px solid CanvasText; } }

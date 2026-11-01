@@ -56,3 +56,16 @@ Nimiq Pay's hidden testnet setting affects Nimiq only: EVM calls still use mainn
 - Unverified: installed host/version injection, event delivery, RPC breadth, native dialogs, balances and transaction execution on a real device.
 - Assumed for deployment: operator supplies reachable HTTPS hosting and an SPA fallback; no deployment is included.
 - `eth_sendTransaction` is documented, but runtime capability cannot safely be established by this no-send probe; no supported-method discovery API is documented.
+
+## Deferred until funded
+
+No funded device sends were authorized or performed for M3. The current wallet has 0 USDT and 0 POL. Mocked-provider tests and the existing local fork exercise do not establish device transaction compatibility. Mainnet actions stay disabled in this build.
+
+- [ ] Approve: exact allowance and any zero reset, native dialog, returned hash, canonical receipt and allowance reread.
+- [ ] Supply: separate consent after approval, native send, hash/receipt, wallet and aToken balance changes.
+- [ ] Withdraw: partial/full amount, native send, eligibility and final balances.
+- [ ] Rejection after approval: approval remains confirmed; rejected supply returns 4001; no automatic resend.
+- [ ] Reload while pending: fresh connect/switch/reread, reconcile stored hash before allowing a new send.
+- [ ] Insufficient POL on a real send: verify actual host error and no misleading completion.
+
+Before these checks, obtain separate written authorization for exact account, Polygon 137, token/Pool, maximum USDT and POL budget. Do not infer authorization from funding or this checklist.

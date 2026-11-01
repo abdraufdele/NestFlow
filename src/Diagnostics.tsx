@@ -1,3 +1,4 @@
+import { walletRequest } from './lib/wallet';
 import { useEffect, useRef, useState } from 'react';
 import { init } from '@nimiq/mini-app-sdk';
 import { bounded, message, probe, type Provider, type Rows } from './lib/diagnostics';
@@ -38,11 +39,11 @@ export function Diagnostics() {
       let params: unknown;
       if (method === 'wallet_switchEthereumChain') params = [{ chainId: '0x89' }];
       if (method === 'personal_sign') {
-        const accounts = await bounded(provider.request({ method: 'eth_accounts' }));
+        const accounts = await bounded(walletRequest(provider, { method: 'eth_accounts' }));
         if (!Array.isArray(accounts) || !accounts.length) throw new Error('Connect an account first');
         params = ['NestFlow diagnostics: reject this harmless message. No transaction or token approval.', accounts[0]];
       }
-      await bounded(provider.request({ method, ...(params ? { params } : {}) }), 60000);
+      await bounded(walletRequest(provider, { method, ...(params ? { params } : {}) }), 60000);
       setAction(`${method}: completed. Refresh to observe current state.`);
     } catch (e) { setAction(`${method}: ${message(e)}`); }
     finally { setBusy(false); }
@@ -59,5 +60,3 @@ export function Diagnostics() {
     <dl aria-live="polite">{Object.entries(rows).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
   </main>;
 }
-
-
