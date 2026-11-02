@@ -48,8 +48,9 @@ export function Diagnostics() {
     } catch (e) { console.error('Wallet request failed', e); setAction(isRejected(e) ? 'Rejected. The wallet request was declined. You can choose to try again.' : `${method}: ${message(e)}`); }
     finally { setBusy(false); }
   }
-  return <main>
+  return <main className="diagnostics-screen">
     <h1>NestFlow host diagnostics (M2)</h1>
+    <p><a href="/">Return to NestFlow</a></p>
     <p>Read-only snapshots. No approve, supply, withdraw or send transaction controls. POL pays gas.</p>
     <p role="status">Nimiq SDK: {sdk}</p>
     <button disabled={busy} onClick={() => void refresh()}>Refresh diagnostics</button>{' '}
@@ -57,6 +58,6 @@ export function Diagnostics() {
     <button disabled={busy} onClick={() => void walletAction('wallet_switchEthereumChain')}>Request Polygon (137)</button>{' '}
     <button disabled={busy} onClick={() => void walletAction('personal_sign')}>Request test signature — reject in wallet</button>
     <p role="status">{action}</p>
-    <dl aria-live="polite">{Object.entries(rows).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+    <dl className="details" aria-live="polite">{Object.entries(rows).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
   </main>;
 }

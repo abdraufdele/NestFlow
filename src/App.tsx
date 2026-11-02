@@ -237,17 +237,16 @@ export function App() {
   function changePreference(value: string) { setPreference(value); setPreview(undefined); setErrors({ ...errors, preference: '' }); }
   return <div className="app">
     <a className="skip-link" href="#content">Skip to balances</a>
-    <header className="masthead"><a href="/" aria-label="NestFlow home"><img src={logo} alt="NestFlow" width="64" height="64" /></a><div><span className="eyebrow">NIMIQ PAY · POLYGON</span><p className="brand-title">Make room for what’s next.</p></div>{import.meta.env.DEV && <a className="diagnostics-link" href="/diagnostics">Diagnostics</a>}</header>
+    <header className="masthead"><a href="/" aria-label="NestFlow home"><img src={logo} alt="NestFlow" width="64" height="64" /></a><div><span className="eyebrow">NIMIQ PAY · POLYGON</span><p className="brand-title">NestFlow · Independent mini-app</p></div>{import.meta.env.DEV && <a className="diagnostics-link" href="/diagnostics">Diagnostics</a>}</header>
     <main id="content">
-      <div className="intro"><span className="eyebrow">A LITTLE MORE INTENTION</span><h1>Your USDT,<br />with room to spend.</h1><p>Choose what stays in your wallet. Preview what the rest could earn through Aave V3.</p></div>
+      <div className="intro"><h1>Room to spend.</h1><p>Choose what stays in your wallet. Preview what the rest could earn through Aave V3.</p></div>
       <section className="connection" aria-labelledby="connection-heading">
         <div><h2 id="connection-heading">Your wallet</h2><p className="account">{data ? data.account : 'Connect on every open. Polygon is checked each time.'}</p></div>
-        <button className="secondary" disabled={busy} onClick={() => void connect()}>{data ? 'Refresh balances' : 'Connect wallet'}</button>
+        <button className={data ? "secondary" : undefined} disabled={busy} onClick={() => void connect()}>{data ? 'Refresh balances' : 'Connect wallet'}</button>
       </section>
       <p className="status" role="status" aria-live="polite" aria-atomic="true">{busy && <span className="loading-dot" aria-hidden="true" />}{status}</p>
       <p className="dev-note">Not verified on device: approval, supply and withdrawal. {transactionsEnabled ? (import.meta.env.MODE === 'e2e' ? 'Mocked local test only.' : 'Private funded-test build: maximum 5 USDT per action.') : 'Mainnet transactions disabled in this build.'}</p>
-      <p><a href="/history">Confirmed history</a></p>
-      <p><a href="/independent-exit">Exit independently through Aave</a></p>
+      <nav className="screen-nav" aria-label="Explore NestFlow"><a href="/">Overview</a><a href="/history">Confirmed history</a><a href="/independent-exit">Exit independently through Aave</a></nav>
       {typeof window !== 'undefined' && window.location.pathname === '/independent-exit' && <IndependentExit />}
       {data && window.location.pathname === '/history' && renderedWallet && <ScreenBoundary><History key={data.account + ':' + data.position.timestamp} account={data.account} wallet={renderedWallet} /></ScreenBoundary>}
       {data && <>

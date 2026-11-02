@@ -153,13 +153,12 @@ tier inventory. It does not pass funded-device tier gates or authorize mainnet.
 
 Evidence and limits: [M4 verification](m4-test-results.md).
 
-## Deferred polish
+## Deferred polish — cleared in M5b
 
-- Use one short tagline instead of two.
-- Use a filled primary Connect button.
-- Make spacing consistent and visually review all screens.
-- Review the header logo against `docs/brand/` so it does not imitate a Nimiq mark;
-  do not redraw or alter existing assets without explicit authorization.
+- Done: one short tagline, “Room to spend.”
+- Done: filled primary Connect button; refresh remains secondary.
+- Done: shared spacing/type/motion and state surfaces; review evidence in [M5b verification](m5b-test-results.md).
+- Done: header already uses supplied logo B, byte-identical to docs/brand master. Compared against Nimiq Pay’s hexagon icon; retained unchanged, no redraw.
 
 ## M5a scope update â€” 2 November 2026
 

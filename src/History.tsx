@@ -15,8 +15,8 @@ export function History({ account, wallet }: { account: Address; wallet: WalletA
   }, [account, wallet, attempt]);
   return <section className="panel history-panel" aria-labelledby="history-heading"><h2 id="history-heading">Confirmed history</h2>
     <p>Only mined on-chain supplies and withdrawals with at least two confirmations appear here. Pending requests and approvals are separate in transaction recovery. Forecasts appear only in the supply preview.</p>
-    {!data && !error && <p role="status">Loading confirmed events…</p>}
-    {error && <><p role="alert">{error}</p><button onClick={() => { setError(''); setAttempt(attempt + 1); }}>Retry history</button></>}
+    {!data && !error && <p className="screen-state" role="status">Loading confirmed events…</p>}
+    {error && <><p className="screen-state screen-error" role="alert">{error}</p><button onClick={() => { setError(''); setAttempt(attempt + 1); }}>Retry history</button></>}
     {data && <><p>Current supplied balance at confirmed block {data.toBlock.toString()}: <strong>{formatAmount(data.supplied, 6)} USDT</strong>. Read from the aToken contract; never inferred from this event list.</p>
       <p className="caption">Observed {new Date(Number(data.observedAt) * 1000).toLocaleString('en-GB')} · Polygon 137 · Blocks {data.fromBlock.toString()}–{data.toBlock.toString()} · Account {data.account}</p>
       <p className="warning">{data.limitation}</p><p>External aToken transfers: {data.externalTransfers ? 'detected in this window; these are not interest.' : 'none detected in this window; earlier transfers are unknown.'}</p>

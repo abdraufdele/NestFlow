@@ -5,7 +5,8 @@
   --tint: #e8f3ef; --warning-bg: #fff2d5; --warning-ink: #64440c;
   --danger: #9a3028; --focus: #114fbd; --scrollbar-thumb: #658b87;
   --scrollbar-track: #e8f3ef; --scrollbar-hover: #027f7b; --scrollbar-active: #08282b;
-  --radius: 18px; --space: 24px;
+  --radius: 18px; --space: 24px; --space-small: 12px; --motion: 150ms;
+  --control-line: #658b87; --action-ink: #026d69;
   font-family: "Trebuchet MS", "Segoe UI", sans-serif; color: var(--brand-ink); background: var(--paper);
   font-synthesis: none; line-height: 1.55; scrollbar-gutter: stable;
 }
@@ -16,10 +17,10 @@
 *::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
 *::-webkit-scrollbar-thumb:active { background: var(--scrollbar-active); }
 body { margin: 0; } button, input { font: inherit; }
-a { color: var(--brand-teal); text-underline-offset: 4px; cursor: pointer; }
+a { color: var(--action-ink); text-underline-offset: 4px; cursor: pointer; }
 a:hover { text-decoration-thickness: 2px; }
 a:active { opacity: .8; }
-button { min-height: 48px; padding: 12px 22px; border: 1px solid var(--brand-teal); border-radius: 10px; background: var(--brand-teal); color: var(--surface); font-weight: 700; cursor: pointer; }
+button { min-height: 48px; padding: 12px 22px; border: 1px solid var(--brand-teal); border-radius: 10px; background: var(--action-ink); color: var(--surface); font-weight: 700; cursor: pointer; }
 button:hover:enabled { background: var(--brand-ink); border-color: var(--brand-ink); }
 button:active:enabled { transform: translateY(1px); }
 button:disabled { opacity: .5; cursor: not-allowed; }
@@ -61,7 +62,7 @@ p { margin: 10px 0 16px; }
 .panel > p { color: var(--muted); font-size: 15px; }
 fieldset { border: 0; padding: 0; margin: 22px 0 0; min-width: 0; }
 label { display: block; font-size: 14px; font-weight: 700; margin: 18px 0 8px; }
-input:not([type=range]) { display: block; width: 100%; min-height: 52px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--surface); color: var(--brand-ink); font-variant-numeric: tabular-nums; }
+input:not([type=range]) { display: block; width: 100%; min-height: 52px; border: 1px solid var(--control-line); border-radius: 10px; padding: 12px 14px; background: var(--surface); color: var(--brand-ink); font-variant-numeric: tabular-nums; }
 input[aria-invalid=true] { border-color: var(--danger); }
 .amount-field { position: relative; }
 .amount-field input { padding-right: 68px; font-size: 24px; }
@@ -71,7 +72,7 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .split-caption { display: flex; justify-content: space-between; gap: 14px; font-size: 12px; }
 .split-caption span:last-child { color: var(--muted); font-size: 10px; letter-spacing: .08em; }
 .split-track { height: 30px; background: var(--brand-teal); border: 1px solid var(--brand-ink); border-radius: 8px; overflow: hidden; margin: 12px 0; }
-.split-track > span { display: block; height: 100%; background: var(--brand-gold); border-right: 2px solid var(--surface); transition: width .15s ease-out; }
+.split-track > span { display: block; height: 100%; background: var(--brand-gold); border-right: 2px solid var(--surface); transition: width var(--motion) ease-out; }
 .split-values { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
 .split-values strong { display: block; margin-top: 4px; font-size: 20px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .key { font-size: 12px; }
@@ -121,3 +122,25 @@ footer p { font-size: 12px; color: var(--muted); margin: 0; }
 .panel li + li { margin-top: .75rem; }
 
 .history-panel { overflow-wrap: anywhere; }
+
+/* M5b: shared rhythm and states across overview, history, exit and diagnostics. */
+main > .panel, main > .screen-state, main > .workspace { margin-block: var(--space); }
+.screen-nav { display: flex; flex-wrap: wrap; gap: 4px var(--space); margin-block: var(--space); }
+.screen-nav a, .panel a, footer a, .diagnostics-screen a { display: inline-block; min-height: 44px; padding-block: 10px; }
+.screen-state { min-height: 80px; padding: var(--space); background: var(--tint); border: 1px solid var(--control-line); border-radius: var(--radius); overflow-wrap: anywhere; }
+.screen-error { color: var(--danger); background: var(--surface); border-color: var(--danger); }
+.panel > .warning { color: var(--warning-ink); }
+.panel > .screen-error { color: var(--danger); }
+fieldset > button + button, .panel button + button { margin-top: var(--space-small); }
+button { transition: background-color var(--motion), border-color var(--motion); }
+.diagnostics-screen { padding-block: var(--space); overflow-wrap: anywhere; }
+.diagnostics-screen > button { display: block; width: 100%; margin-bottom: var(--space-small); }
+.diagnostics-screen .details { background: var(--surface); padding: var(--space); border-radius: var(--radius); }
+.diagnostics-screen dt { overflow-wrap: anywhere; }
+@media (max-width: 420px) {
+  .details > div { grid-template-columns: 1fr; gap: 4px; }
+  .details dd { text-align: left; }
+  .section-top { flex-wrap: wrap; }
+  button { max-width: 100%; overflow-wrap: anywhere; }
+  .screen-nav { gap: 0 var(--space-small); }
+}
