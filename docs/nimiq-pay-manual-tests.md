@@ -1,6 +1,6 @@
 # Nimiq Pay M2 manual tests
 
-Status: NOT RUN on a device or mainnet. Local automated tests are not host evidence.
+Status: historical M2 checklist template. Later user-reported Android connect/switch/Polygon-read observations are recorded in m3-test-results.md and m4-test-results.md; the original unfilled rows below are not evidence of a rerun. Funded installed-device sends remain NOT RUN. Local automated tests are not host evidence.
 Record date, OS/device, installed Nimiq Pay version, build commit, URL, account (redact when sharing), chain, screenshots, observed results and pass/fail for each item. Do not record keys or seed phrases.
 
 ## Load in Nimiq Pay (five steps)

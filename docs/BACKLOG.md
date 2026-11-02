@@ -75,7 +75,7 @@ Every feature needs meaningful tests (or repeatable manual review for documentat
 | Read-only external yield/DeFiLlama context adapter | Sourced rate context | M5 reporting and polish | T3 | API migration; rate conventions; stale quote | Deferred; never build unless asked |
 | Read-only Aave/Fluid same-token comparison | Understand alternative observations | M5 reporting and polish | T3 | Different costs/risks; no execution adapter | Deferred; research/display only if asked |
 | Aave V4 feasibility study, no integration | Assess future version deliberately | M1 core logic | T3 | Deployment mismatch; not drop-in V3 | Deferred; study only if asked |
-| Foreground-only operational/rate notices | Explain fresh observations | M4 recovery and diagnostics | T3 | No guaranteed background delivery | Deferred; no backend/automation |
+| Foreground-only operational/rate notices | Explain fresh observations | M4 recovery and diagnostics | T3 | No reliable background delivery | Deferred; no backend/automation |
 | Freelancer/business reporting or embedded-wallet product study | Assess future direction | M5 reporting and polish | T3 | New audience/scope | Deferred; study only if asked |
 
 ## Signature choice
@@ -102,7 +102,7 @@ Milestones below are conceptual classification only. Never schedule blocked reco
 | Fluid/Morpho/Spark/Compound adapters/auto-routing | More strategies | M1 core logic | T3 | Multi-protocol execution | Blocked by AGENTS.md |
 | Aave V4 execution on another chain/market | New protocol version | M1 core logic | T3 | Outside V3 Polygon; different accounting | Blocked by current scope |
 | Custom vault/custody/pooled funds/locking/token/yield-fee contract | New fund/fee mechanics | M1 core logic | T3 | Custody/private-key/custom-contract rules | Blocked by AGENTS.md |
-| ERC-4337 smart account/paymaster sponsorship | Reduce gas friction | M2 Nimiq Pay host probe | T3 | Different account/provider/backend assumptions | Blocked as proposed; no gasless claim |
+| ERC-4337 smart account/paymaster sponsorship | Reduce gas friction | M2 Nimiq Pay host probe | T3 | Different account/provider/backend assumptions | Blocked as proposed; POL-fee requirements remain explicit |
 | Automatic gas top-up/treasury user payments | Remove funding step | M2 Nimiq Pay host probe | T3 | Automation/private keys/backend/fund authorization | Blocked as proposed |
 | AI assistant/tutor/recommendations/agent | Explain/automate decisions | M3 UI | T3 | AI explicitly excluded | Blocked by AGENTS.md |
 | WalletConnect/alternative wallet SDK/seed import/key storage | Broader wallets | M2 Nimiq Pay host probe | T3 | Injected-only/private-key conflict | Blocked by AGENTS.md |
@@ -110,7 +110,7 @@ Milestones below are conceptual classification only. Never schedule blocked reco
 | Social savings/challenges/leaderboards/streaks/cashback/referrals | Social engagement | M3 UI | T3 | Separate scope; many require backend/automation | Excluded competitor/inspiration ideas |
 | Automatic bill/spending detection or atomic withdraw-and-pay | Payment convenience | M1 core logic | T3 | Unsupported visibility/automation/custom execution | Blocked as proposed; manual shortfall retained |
 | Remittance/merchant reconciliation/bill splitting/round-ups/private payments/on-off-ramp platform | Other hackathon problems | M1 core logic | T3 | Separate products; may violate rules | Excluded earlier alternatives |
-| Essential-bill protection/guaranteed liquidity or returns/insured-bank positioning | Reassurance | M3 UI | T3 | False assurance/forbidden wording | Blocked; preference is planning only |
+| Essential-bill protection/unconditional liquidity or returns/deposit-protection positioning | Reassurance | M3 UI | T3 | False assurance/forbidden wording | Blocked; preference is planning only |
 | Unlimited allowance or auto-retry after uncertain receipt | Fewer clicks | M4 recovery and diagnostics | T3 | Exact-approval/reconciliation conflict | Blocked by AGENTS.md |
 | Mainnet transactions without explicit user OK | Live evidence | M2 Nimiq Pay host probe | T3 | Unauthorized real funds | Blocked until explicit OK |
 
@@ -153,12 +153,12 @@ tier inventory. It does not pass funded-device tier gates or authorize mainnet.
 
 Evidence and limits: [M4 verification](m4-test-results.md).
 
-## Deferred polish ó cleared in M5b
+## Deferred polish ‚Äî cleared in M5b
 
-- Done: one short tagline, ìRoom to spend.î
+- Done: one short tagline, ‚ÄúRoom to spend.‚Äù
 - Done: filled primary Connect button; refresh remains secondary.
 - Done: shared spacing/type/motion and state surfaces; review evidence in [M5b verification](m5b-test-results.md).
-- Done: header already uses supplied logo B, byte-identical to docs/brand master. Compared against Nimiq Payís hexagon icon; retained unchanged, no redraw.
+- Done: header already uses supplied logo B, byte-identical to docs/brand master. Compared against Nimiq Pay‚Äôs hexagon icon; retained unchanged, no redraw.
 
 ## M5a scope update ‚Äî 2 November 2026
 

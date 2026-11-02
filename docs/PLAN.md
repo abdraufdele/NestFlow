@@ -30,7 +30,7 @@ Job: decide whether supplying is worthwhile after costs, retain a chosen wallet 
 - Token and monetary calculations use bigint base units. Parse decimal strings at boundaries, verify decimals, document rounding, and use scaled integer/fixed-point rates. No floating-point money math.
 - PoolAddressesProvider resolves the Pool, not the USDT token identity. Preserve the existing rule while independently verifying the token against official documentation and reserve data. Verify underlying/aToken, chain and reserve eligibility. Configuration provenance belongs in src/config/aave.ts; no addresses from memory.
 - Recheck action-specific reserve flags, cap headroom, allowance, balances, gas and account debt/collateral. Frozen and paused states have different action effects.
-- Gas is POL. Detect shortages early. Ordinary mini-app EVM calls do not inherit native Nimiq Pay USDT-send gas abstraction. Do not claim gasless execution.
+- Gas is POL. Detect shortages early. Ordinary mini-app EVM calls do not inherit native Nimiq Pay USDT-send gas abstraction. Do not imply contract-call fees are sponsored.
 - Preview approval when required, supply, and estimated future withdrawal costs. Existing allowance may remove an approval step. Distinguish current estimates from uncertain future gas/rates. Label any POL/USDT conversion quote with source/time or disclose unavailable conversion.
 - Show holding period, lower-rate scenario, gross earnings, fees, approximate net result and fee break-even. Verify APR/APY conventions. Historical DeFiLlama snapshots are not current quotes; separate base rates from incentive assumptions.
 - Fee break-even does not compensate for investment risk. Small balances/short periods may be uneconomic. Do not promise a higher underlying rate than the same reserve elsewhere.
@@ -38,7 +38,7 @@ Job: decide whether supplying is worthwhile after costs, retain a chosen wallet 
 
 ## T1 differentiation
 
-- Spending preference: account/chain-scoped target to retain in the wallet. Planning only; no lock, insurance, automatic transfer or guaranteed availability.
+- Spending preference: device-local target to retain in the wallet (M4 supersedes the original account/chain-scoped plan; shared across accounts, no addresses stored). Planning only; no lock, insurance, automatic transfer or assured availability.
 - Shortfall: max(0, desired payment minus confirmed wallet USDT), in base units. Offer an eligible user-approved withdrawal; explain insufficient withdrawable funds. Later payment remains separate. No automatic bill detection or atomic withdraw-and-pay claim.
 - Existing positions: discover the exact supported aToken position, including positions created elsewhere. Missing history must not prevent eligible withdrawals.
 - Diagnostics: account position, reserve state, liquidity, debt/collateral, gas and simulation where supported. Show observation block/time and specific reasons. Successful checks do not ensure future execution.
@@ -52,7 +52,7 @@ Show confirmed balances separately from "after proposed supply" preview. A slide
 
 ## Recovery and reporting
 
-- Persist {account, chainId, txHash, action, status} immediately after a hash. Namespace preferences and reads by account/chain; invalidate stale asynchronous responses.
+- Persist {account, chainId, txHash, action, status} immediately after a hash. Namespace transaction recovery and reads by account/chain; preferences follow the device-local M4 decision; invalidate stale asynchronous responses.
 - Approval != supply; hash != confirmation. Reconcile receipts, allowance and balance before retry. Never resend automatically on timeout.
 - Handle rejected/reverted/replaced/unknown/pending states, duplicate clicks, account/chain changes, RPC failure, stale data and interrupted sessions.
 - IndexedDB denial/failure must produce a clear recovery limitation, not false durability. Local storage is never balance authority.
@@ -65,7 +65,7 @@ Mobile-first cohesive CSS-variable design system using NestFlow's teal/gold flow
 
 Design loading, empty, error, pending, success, disconnected and stale states. Include accessible contrast, touch targets, labels, focus, keyboard input, screen-reader text and reduced motion. Put plain-language costs and risks at the decision point.
 
-Preserve forbidden promotional copy: "bank", "insured", "guaranteed", "official Aave". Label estimates. No risk-free, gasless, highest-yield, globally novel, automatic reserve or guaranteed-access claims. Use "Checks passed as of <time>" only for checks actually performed. Explain NestFlow is independent and Aave provides lending infrastructure.
+Follow the promotional-copy restrictions in AGENTS.md. Label estimates; do not promise returns, fee sponsorship, exceptional yield, novelty, automatic reserves or unconditional access. Use "Checks passed as of <time>" only for checks actually performed. Explain NestFlow is independent and Aave provides lending infrastructure.
 
 ## Competition constraints and historical findings
 

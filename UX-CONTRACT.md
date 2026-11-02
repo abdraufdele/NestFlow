@@ -5,7 +5,7 @@
 | Scope, permission, money, wording | AGENTS.md; docs/PLAN.md; explicit M3 request | Exact separate approvals; no mainnet sends; estimates labelled |
 | Identity and lifecycle | User-reported Android findings; src/lib/wallet.ts | Connect, check/switch, reread each open; clear stale identities |
 | Transactions and persistence | src/lib/aave.ts; src/lib/txStore.ts | Reconcile before retry; pending stays locked; hash is not confirmation |
-| Costs | docs/PLAN.md; src/lib/math.ts | No invented POL/USDT quote or net result |
+| Costs | docs/PLAN.md; src/lib/math.ts | Optional sourced/fresh oracle quote only; net unavailable without every fee estimate |
 ## Canonical UI Map
 | Capability | Canonical owner | Source of truth | Allowed variants | Verification |
 |---|---|---|---|---|
@@ -23,7 +23,7 @@ No tables, selects, date pickers, CRUD or modal dialogs are used in M3.
 - Reload: no stored identity assumed; connect again, then reconcile existing transaction journal before another action. Source: AGENTS.md.
 - Sibling diagnostics: retains read-only M2 purpose, using the same wallet request boundary and CSS controls. Source: M2 existing tests.
 ## Display thresholds
-Earnings below 0.01 USDT over the chosen period trigger a small-earnings warning. This is a display threshold, not a comparison with POL costs: no conversion quote exists, so net and fee break-even remain unavailable.
+Earnings below 0.01 USDT over the chosen period trigger a small-earnings warning. This is a display threshold, not a comparison with POL costs: net and fee break-even remain unavailable unless the optional M4/M5a quote and all required fee estimates are available.
 
 ## M5a reporting and optional quote
 - History: src/lib/history.ts owns confirmed Pool logs (two confirmations), bounded coverage, canonical-block checks and independent confirmed aToken balance. src/History.tsx reuses panels/native buttons and explicit loading/empty/error/limitation states. Account/chain invalidation unmounts the screen; failed history does not block withdrawal.

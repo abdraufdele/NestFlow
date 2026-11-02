@@ -18,3 +18,6 @@ Production verification: npm run test:e2e:production -- --reporter=line — PASS
 
 ## Step 2 — README walkthrough
 README and new CHANGELOG local link targets checked with Python: PASS. Requirement walkthrough: setup/commands, Custom URL, usage, verified/assumed table, limitations, independent same-account Polygon V3 exit, private build cap and changelog present. Source comparison: package scripts, wallet.ts build flag/cap, manual-test procedure and current Nimiq loading guide. Commands are documented, not a new clean-machine install or funded/device test. PASS.
+
+## Step 3 — wording sweep
+PASS: prohibited-term search across UI/docs has no matches outside the review command itself (expected rg exit 1). Changes and repeatable walkthrough are in WORDING-REVIEW.md. Compared rate/approval/receipt/fee/independent-exit/device claims with current code and historical evidence. Also corrected obsolete preference and conversion wording; no new UI/financial behavior. UTF-8 decode check for tracked Markdown/source: PASS. Diff whitespace check: PASS.
