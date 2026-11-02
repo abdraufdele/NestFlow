@@ -16,3 +16,6 @@ Project checks and screenshots are recorded in docs/m3-test-results.md. Playwrig
 
 ## M4 extensions
 Reuse existing panels, form controls, status and tokens for manual shortfall and recovery. Independent exit is available without a connection at /independent-exit. Timestamped checks describe only the observed amount; no blanket safety badge. Preferences contain only device-local planning inputs. Diagnostics link is dev-only. M4 screenshots and verification are in docs/m4-test-results.md.
+
+## M5a extensions
+The explicit M5a request adds /history using existing panel, caption, warning and native button styles. Confirmed on-chain event rows are separate from the current confirmed aToken balance, recovery journal and forecast preview. Missing/incomplete history withholds earnings and shows coverage. Diagnostics/history use lazy chunks with shared loading and reload fallback. No new visual system or branding changes. Evidence: docs/m5a-test-results.md.

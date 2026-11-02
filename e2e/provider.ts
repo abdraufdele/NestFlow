@@ -1,10 +1,12 @@
 import { test, type Page } from '@playwright/test';
-import { encodeFunctionResult, toFunctionSelector, type Abi } from 'viem';
+import { encodeAbiParameters, encodeEventTopics, encodeFunctionResult, toFunctionSelector, type Abi } from 'viem';
+import { supplyEvent, withdrawEvent } from '../src/lib/history';
 import { quoteAbi } from '../src/lib/quote';
 import { DOCUMENTED, PRICE_ADDRESSES } from '../src/config/aave';
 import { providerAbi, poolAbi, tokenAbi, dataAbi } from '../src/config/abi';
 
 export interface MockOptions {
+  historyEvents?: boolean;
   staleFeed?: boolean;
   historyFailed?: boolean;
   replacementMode?: 'repriced' | 'cancelled' | 'wrong-nonce';
@@ -37,7 +39,12 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
       else replies[toFunctionSelector(item)] = { name, value: '0x' };
     }
   }
-  await page.addInitScript(({ options, replies, addresses }) => {
+  const eventAccount = '0x1111111111111111111111111111111111111111';
+  const historyLogs = [
+    { address: DOCUMENTED.pool, topics: encodeEventTopics({ abi: [supplyEvent], eventName: 'Supply', args: { reserve: DOCUMENTED.underlying, onBehalfOf: eventAccount, referralCode: 0 } }), data: encodeAbiParameters([{ type: 'address' }, { type: 'uint256' }], [eventAccount, 10_000_000n]), logIndex: '0x1' },
+    { address: DOCUMENTED.pool, topics: encodeEventTopics({ abi: [withdrawEvent], eventName: 'Withdraw', args: { reserve: DOCUMENTED.underlying, user: eventAccount, to: eventAccount } }), data: encodeAbiParameters([{ type: 'uint256' }], [2_000_000n]), logIndex: '0x2' },
+  ];
+  await page.addInitScript(({ options, replies, addresses, historyLogs }) => {
     const account = '0x1111111111111111111111111111111111111111';
     const hash = '0x' + 'a'.repeat(64); const blockHash = '0x' + 'b'.repeat(64);
     const state = {
@@ -70,7 +77,7 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
         }
         if (method === 'web3_clientVersion') return 'anvil/e2e';
         if (method === 'eth_getBlockByNumber') { const requested = (params as string[])[0]; return { ...block(), number: requested === 'latest' ? '0x65' : requested }; }
-        if (method === 'eth_getLogs') { if (options.historyFailed) throw new Error('History unavailable'); return []; }
+        if (method === 'eth_getLogs') { if (options.historyFailed) throw new Error('History unavailable'); const filter = (params as { topics: string[] }[])[0]; return options.historyEvents ? historyLogs.filter(log => log.topics[0] === filter.topics[0]).map(log => ({ ...log, blockNumber: '0x63', blockHash, transactionHash: hash, transactionIndex: '0x0', removed: false })) : []; }
         if (method === 'eth_blockNumber') return '0x65';
         if (method === 'eth_getCode') return '0x1234';
         if (method === 'eth_getBalance') return '0x' + BigInt(options.lowPol ? '1' : options.pol ?? '1000000000000000000').toString(16);
@@ -131,7 +138,7 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
       else state.chain = '0x1';
       if (!options.noEvents) (listeners[kind === 'account' ? 'accountsChanged' : 'chainChanged'] ?? []).forEach(fn => fn());
     } });
-  }, { options, replies, addresses: DOCUMENTED });
+  }, { options, replies, addresses: DOCUMENTED, historyLogs });
 }
 
 test.afterEach(async ({ page }, info) => {

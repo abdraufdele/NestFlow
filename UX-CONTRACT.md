@@ -24,3 +24,10 @@ No tables, selects, date pickers, CRUD or modal dialogs are used in M3.
 - Sibling diagnostics: retains read-only M2 purpose, using the same wallet request boundary and CSS controls. Source: M2 existing tests.
 ## Display thresholds
 Earnings below 0.01 USDT over the chosen period trigger a small-earnings warning. This is a display threshold, not a comparison with POL costs: no conversion quote exists, so net and fee break-even remain unavailable.
+
+## M5a reporting and optional quote
+- History: src/lib/history.ts owns confirmed Pool logs (two confirmations), bounded coverage, canonical-block checks and independent confirmed aToken balance. src/History.tsx reuses panels/native buttons and explicit loading/empty/error/limitation states. Account/chain invalidation unmounts the screen; failed history does not block withdrawal.
+- Export: src/lib/historyCsv.ts owns CSV quoting/formula neutralization, exact amounts and provenance/advice warnings. Export is user-initiated and available only after a complete successful window read.
+- Lazy screens: src/ScreenBoundary.tsx owns Suspense and reload-on-chunk-failure handling; history failure stays local to that section.
+- Costs: the M4 optional protocol quote now requires both source update times within one hour, in addition to recent observation block. Unsupported timestamp interface or stale/invalid round makes quote/net/break-even unavailable. This supersedes earlier no-conversion wording only when a verified fresh quote exists.
+- Evidence: e2e/m5a.spec.ts; history/CSV/quote unit suites; scripts/test-fork.ts; docs/m5a-test-results.md.

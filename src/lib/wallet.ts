@@ -3,7 +3,7 @@ import { polygon } from 'viem/chains';
 import { resolveAaveConfig } from '../config/aave';
 import { poolAbi, tokenAbi } from '../config/abi';
 import { approve, supply, withdraw, readPosition, readReserveState, readAllowance, estimatePolCost, checkWithdrawEligibility } from './aave';
-import { readHistory } from './history';
+import type { readHistory } from './history';
 import { readPolQuote, type OracleQuote } from './quote';
 import { openTxStore, type TxAction, type TxRecord } from './txStore';
 
@@ -109,6 +109,7 @@ export function createWalletAdapter(provider: WalletProvider, options: { localTe
     },
     async history(account) {
       await assertAccount(account);
+      const { readHistory } = await import('./history');
       const result = await readHistory(client, account);
       await assertAccount(account);
       return result;

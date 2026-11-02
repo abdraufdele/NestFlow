@@ -160,3 +160,15 @@ Evidence and limits: [M4 verification](m4-test-results.md).
 - Make spacing consistent and visually review all screens.
 - Review the header logo against `docs/brand/` so it does not imitate a Nimiq mark;
   do not redraw or alter existing assets without explicit authorization.
+
+## M5a scope update — 2 November 2026
+
+Explicit five-step request authorizes M5a only; M1–M4 behavior and remaining funded-device limits are retained. No new dependency, send flag, funding, deployment or mainnet transaction.
+
+- Done locally: confirmed Supply/Withdraw history at head minus one, independently read confirmed aToken balance, timestamps and Polygon transaction links. Last 2,000 blocks only, 500-block RPC pages; errors disclose unavailable history. External transfers and incomplete coverage never become interest. Earnings reconstruction remains unavailable; no chart or invented lifetime performance.
+- Done locally: CSV of confirmed events only, exact base units/decimal amounts, account/network/contracts/block/hash/log provenance, incomplete-history warning and not-tax/accounting-advice header. Formula prefixes neutralized.
+- Done locally: one-hour maximum source update age for both oracle feeds, zero/future/invalid rounds rejected. Unsupported source timestamp reads make quote/net/break-even unavailable. Withdrawal checks stay usable. Current USDT source lacks latestRoundData in the verified fork, so quote is conservatively unavailable.
+- Done: runtime npm audit zero; 15 dev-only findings triaged, compatible audit fix found dependencies already up to date. Breaking upgrades/--force deferred. SECURITY.md, MIT LICENSE review and repeatable tracked-history credential scan. Personal Git metadata finding and the authorized post-M5a rewrite/backup procedure are documented.
+- Done locally: lazy diagnostics/history with loading/reload fallback. About 20 kB diagnostics plus history chunks load separately; main chunk remains about 591 kB and still triggers Vite's warning. Further dependency chunk tuning deferred as higher scope/risk.
+
+Evidence and exact commands/results: [M5a verification](m5a-test-results.md). Remaining T2 items, observed-user sessions, full accessibility/device tests and real sends remain deferred. Backup/pre-rewrite intentionally preserves original metadata; only rewritten main is intended to be email-clean.

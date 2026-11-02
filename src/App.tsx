@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { History } from './History';
+import { lazy, useEffect, useRef, useState } from 'react';
+import { ScreenBoundary } from './ScreenBoundary';
+const History = lazy(() => import('./History').then(module => ({ default: module.History })));
 import { IndependentExit } from './IndependentExit';
 import { Shortfall } from './Shortfall';
 import { loadPreferences, savePreferences, resetPreferences } from './lib/preferences';
@@ -36,6 +37,7 @@ export function App() {
   const connectedSession = useRef(false);
   const skipSave = useRef(false);
   const preferenceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [renderedWallet, setRenderedWallet] = useState<WalletAdapter>();
   const [data, setData] = useState<WalletSnapshot>();
   const [status, setStatus] = useState('Connect your wallet to read current balances.');
   const [busy, setBusy] = useState(false);
@@ -69,7 +71,7 @@ export function App() {
       const provider = getInjectedProvider();
       if (!provider) throw new Error('Open in Nimiq Pay to connect. No injected wallet provider is available.');
       const wallet = createWalletAdapter(provider, { localTest: import.meta.env.MODE === 'e2e' });
-      adapter.current = wallet; setTransactionsEnabled(wallet.transactionsEnabled);
+      adapter.current = wallet; setRenderedWallet(wallet); setTransactionsEnabled(wallet.transactionsEnabled);
       // Subscribe after native launch requests: a chain switch can legitimately emit events.
       const identity = await wallet.connect();
       if (version !== generation.current) return;
@@ -247,7 +249,7 @@ export function App() {
       <p><a href="/history">Confirmed history</a></p>
       <p><a href="/independent-exit">Exit independently through Aave</a></p>
       {typeof window !== 'undefined' && window.location.pathname === '/independent-exit' && <IndependentExit />}
-      {data && window.location.pathname === '/history' && adapter.current && <History key={data.account + ':' + data.position.timestamp} account={data.account} wallet={adapter.current} />}
+      {data && window.location.pathname === '/history' && renderedWallet && <ScreenBoundary><History key={data.account + ':' + data.position.timestamp} account={data.account} wallet={renderedWallet} /></ScreenBoundary>}
       {data && <>
         <section className="balance-sheet" aria-labelledby="balances-heading">
           <div className="section-top"><h2 id="balances-heading">Confirmed balances</h2><span className="tag">ON POLYGON</span></div>

@@ -7,12 +7,14 @@ export const withdrawEvent = parseAbiItem('event Withdraw(address indexed reserv
 const transferEvent = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 export interface ConfirmedEvent { action: 'supply' | 'withdraw'; amount: bigint; blockNumber: bigint; blockHash: Hash; txHash: Hash; logIndex: number; timestamp: bigint }
 export interface History { account: Address; fromBlock: bigint; toBlock: bigint; observedAt: bigint; supplied: bigint; events: ConfirmedEvent[]; externalTransfers: boolean; earnings: null; limitation: string }
-export async function readHistory(client: PublicClient, account: Address): Promise<History> {
+export async function readHistory(client: PublicClient, account: Address, sinceBlock?: bigint): Promise<History> {
   if (await client.getChainId() !== 137) throw new Error('Polygon chain 137 required');
   const head = await client.getBlock();
   if (head.number === null || head.number < 1n || Date.now() - Number(head.timestamp) * 1000 > 60_000) throw new Error('Recent history observation unavailable');
   const toBlock = head.number - 1n;
-  const fromBlock = toBlock > 1999n ? toBlock - 1999n : 0n;
+  const windowStart = toBlock > 1999n ? toBlock - 1999n : 0n;
+  const fromBlock = sinceBlock !== undefined && sinceBlock > windowStart ? sinceBlock : windowStart;
+  if (fromBlock > toBlock) throw new Error('No confirmed history window yet');
   const observation = await client.getBlock({ blockNumber: toBlock });
   const supplied = await client.readContract({ address: DOCUMENTED.aToken, abi: tokenAbi, functionName: 'balanceOf', args: [account], blockNumber: toBlock });
   const events: ConfirmedEvent[] = []; let externalTransfers = false;

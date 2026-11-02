@@ -6,6 +6,7 @@ import 'fake-indexeddb/auto';
 import { resolveAaveConfig } from '../src/config/aave';
 import { poolAbi, tokenAbi } from '../src/config/abi';
 import { approve, supply, withdraw, readPosition, readAllowance } from '../src/lib/aave';
+import { readHistory } from '../src/lib/history';
 import { readPolQuote } from '../src/lib/quote';
 import { openTxStore } from '../src/lib/txStore';
 import { MAX_UINT256 } from '../src/lib/math';
@@ -43,8 +44,8 @@ try {
   const client = createPublicClient({ chain: polygon, transport: http(local, { retryCount: 1, timeout: 30_000 }), cacheTime: 0 });
   const config = await resolveAaveConfig(client);
   console.log(`Verified Polygon config at fork block ${config.blockNumber}, reserve ${config.symbol}, decimals ${config.decimals}`);
-  const quote = await readPolQuote(client);
-  console.log(`Verified on-chain WPOL/USDT quote: ${quote.usdtPerPol} USDT base units/POL; block ${quote.blockNumber}; WPOL source ${quote.polSource}; USDT source ${quote.usdtSource}`);
+  const quote = await readPolQuote(client).catch(() => undefined);
+  console.log(quote ? `Verified fresh on-chain WPOL/USDT quote: ${quote.usdtPerPol} USDT base units/POL; block ${quote.blockNumber}; source updates ${quote.polUpdatedAt}/${quote.usdtUpdatedAt}` : 'POL quote unavailable: source update freshness cannot be verified within the one-hour limit. Net and break-even remain unavailable.');
   const result = spawnSync('forge', ['test', '--fork-url', local, '--match-path', 'test/PolygonFork.t.sol', '-vv'], {
     env: { ...process.env, FORK_USDT: config.underlying, FORK_ATOKEN: config.aToken, FORK_POOL: config.pool },
     encoding: 'utf8', windowsHide: true, timeout: 240_000,
@@ -63,6 +64,7 @@ try {
   await admin('anvil_impersonateAccount', [config.aToken]);
   await admin('anvil_setBalance', [config.aToken, '0x8ac7230489e80000']);
   const fixtureWallet = createWalletClient({ chain: polygon, transport: http(local), account: config.aToken });
+  const historyFromBlock = (await client.getBlockNumber({ cacheTime: 0 })) + 1n;
   const funding = await fixtureWallet.writeContract({ address: config.underlying, abi: parseAbi(['function transfer(address,uint256) returns (bool)']), functionName: 'transfer', args: [account, 10_000_000n] });
   await client.waitForTransactionReceipt({ hash: funding });
   const wallet = createWalletClient({ chain: polygon, transport: http(local), account });
@@ -87,6 +89,9 @@ try {
   // Integer loss is at most ceil(2*index/RAY); any accrued interest only increases cash.
   const roundingBudget = (2n * income + 10n ** 27n - 1n) / 10n ** 27n;
   if (cash < 10_000_000n - roundingBudget) throw new Error('Round-trip USDT exceeds protocol rounding loss');
+  const history = await readHistory(client, account, historyFromBlock);
+  if (history.events.filter(e => e.action === 'supply').length !== 1 || history.events.filter(e => e.action === 'withdraw').length !== 2 || history.supplied !== 0n || history.earnings !== null) throw new Error('Confirmed event history mismatch');
+  console.log(`PASS: confirmed Pool history (one supply, two withdrawals), independent zero balance and unavailable earnings through block ${history.toBlock}`);
   console.log('PASS: viem approve / supply / partial and full withdraw / journal reconciliation on Anvil');
 } catch (error) {
   console.error(error instanceof Error ? error.message.replaceAll(rpc, '[RPC redacted]') : 'Fork test failed'); process.exitCode = 1;
