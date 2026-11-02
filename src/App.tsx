@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { History } from './History';
 import { IndependentExit } from './IndependentExit';
 import { Shortfall } from './Shortfall';
 import { loadPreferences, savePreferences, resetPreferences } from './lib/preferences';
@@ -243,8 +244,10 @@ export function App() {
       </section>
       <p className="status" role="status" aria-live="polite" aria-atomic="true">{busy && <span className="loading-dot" aria-hidden="true" />}{status}</p>
       <p className="dev-note">Not verified on device: approval, supply and withdrawal. {transactionsEnabled ? (import.meta.env.MODE === 'e2e' ? 'Mocked local test only.' : 'Private funded-test build: maximum 5 USDT per action.') : 'Mainnet transactions disabled in this build.'}</p>
+      <p><a href="/history">Confirmed history</a></p>
       <p><a href="/independent-exit">Exit independently through Aave</a></p>
       {typeof window !== 'undefined' && window.location.pathname === '/independent-exit' && <IndependentExit />}
+      {data && window.location.pathname === '/history' && adapter.current && <History key={data.account + ':' + data.position.timestamp} account={data.account} wallet={adapter.current} />}
       {data && <>
         <section className="balance-sheet" aria-labelledby="balances-heading">
           <div className="section-top"><h2 id="balances-heading">Confirmed balances</h2><span className="tag">ON POLYGON</span></div>

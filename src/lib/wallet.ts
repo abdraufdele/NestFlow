@@ -3,6 +3,7 @@ import { polygon } from 'viem/chains';
 import { resolveAaveConfig } from '../config/aave';
 import { poolAbi, tokenAbi } from '../config/abi';
 import { approve, supply, withdraw, readPosition, readReserveState, readAllowance, estimatePolCost, checkWithdrawEligibility } from './aave';
+import { readHistory } from './history';
 import { readPolQuote, type OracleQuote } from './quote';
 import { openTxStore, type TxAction, type TxRecord } from './txStore';
 
@@ -51,6 +52,7 @@ export interface WalletAdapter {
     position: Awaited<ReturnType<typeof readPosition>>; reserve: Awaited<ReturnType<typeof readReserveState>>;
     allowance: bigint; record?: TxRecord; quote?: OracleQuote;
   }>;
+  history(account: Address): ReturnType<typeof readHistory>;
   replacement(account: Address, hash: Hash): Promise<TxRecord | undefined>;
   fees(account: Address, amount: bigint, allowance: bigint): Promise<FeePreview>;
   eligibility(account: Address, amount: bigint): ReturnType<typeof checkWithdrawEligibility>;
@@ -104,6 +106,12 @@ export function createWalletAdapter(provider: WalletProvider, options: { localTe
       await assertAccount(account);
       if (Date.now() - Number(position.timestamp) * 1000 > 60_000) throw new Error('Stale data. Refresh before continuing.');
       return { account, config, position, reserve, allowance, record, quote };
+    },
+    async history(account) {
+      await assertAccount(account);
+      const result = await readHistory(client, account);
+      await assertAccount(account);
+      return result;
     },
     async replacement(account, hash) {
       await assertAccount(account);

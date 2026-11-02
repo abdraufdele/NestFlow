@@ -5,6 +5,7 @@ import { DOCUMENTED, PRICE_ADDRESSES } from '../src/config/aave';
 import { providerAbi, poolAbi, tokenAbi, dataAbi } from '../src/config/abi';
 
 export interface MockOptions {
+  historyFailed?: boolean;
   replacementMode?: 'repriced' | 'cancelled' | 'wrong-nonce';
   pol?: string; cash?: string; supplied?: string; allowance?: string;
   rejectConnect?: boolean; rejectSwitch?: boolean; wrongChain?: boolean; stale?: boolean;
@@ -66,7 +67,8 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
           if (!options.wrongChain) state.chain = '0x89'; return null;
         }
         if (method === 'web3_clientVersion') return 'anvil/e2e';
-        if (method === 'eth_getBlockByNumber') return block();
+        if (method === 'eth_getBlockByNumber') { const requested = (params as string[])[0]; return { ...block(), number: requested === 'latest' ? '0x65' : requested }; }
+        if (method === 'eth_getLogs') { if (options.historyFailed) throw new Error('History unavailable'); return []; }
         if (method === 'eth_blockNumber') return '0x65';
         if (method === 'eth_getCode') return '0x1234';
         if (method === 'eth_getBalance') return '0x' + BigInt(options.lowPol ? '1' : options.pol ?? '1000000000000000000').toString(16);
@@ -112,6 +114,7 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
           }
           if (options.simulationFailed && ['supply', 'withdraw'].includes(entry.name)) throw new Error('Simulation reverted');
           if (entry.name === 'getAssetPrice') return tuple(call.data.slice(-40).toLowerCase() === '0d500b1d8e8ef31e21c99d1db9a6444d3adf1270' ? 25_000_000n : 100_000_000n);
+          if (entry.name === 'balanceOf' && call.to.toLowerCase() === addresses.aToken.toLowerCase()) return tuple(state.supplied);
           if (entry.name === 'balanceOf') return tuple(call.data.slice(-40).toLowerCase() === addresses.aToken.slice(2).toLowerCase() ? options.liquidity ?? '1000000000' : state.cash);
           if (entry.name === 'allowance') return tuple(state.allowance);
           if (entry.name === 'getUserReserveData') return tuple(state.supplied, 0n, 0n, 0n, 0n, 0n, 0n, 0n, options.debtCollateral ? 1n : 0n);
