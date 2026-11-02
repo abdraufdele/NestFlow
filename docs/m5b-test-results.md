@@ -15,3 +15,6 @@ Checks: typecheck PASS; lint PASS; unit suite PASS (83/14 files); full mocked br
 Assumptions: mocks are synthetic. Funded installed-device approve/supply/withdraw/rejection/reload and independent Aave compatibility remain unverified. No full screen-reader/cross-device certification, user sessions or lifetime earnings verification. M5a fork evidence is retained; no contract/math/transaction behavior changed, so no new fork run is claimed. Existing Vite bundle-size warning and documented dev dependency findings remain.
 
 Production verification: npm run test:e2e:production -- --reporter=line — PASS (1 test); invokes typecheck plus normal Vite build, verifies no eth_sendTransaction calls and disabled approval/supply/withdrawal. Final dist is the normal send-disabled artifact. Diff whitespace check rerun after removing a trailing blank line: PASS.
+
+## Step 2 — README walkthrough
+README and new CHANGELOG local link targets checked with Python: PASS. Requirement walkthrough: setup/commands, Custom URL, usage, verified/assumed table, limitations, independent same-account Polygon V3 exit, private build cap and changelog present. Source comparison: package scripts, wallet.ts build flag/cap, manual-test procedure and current Nimiq loading guide. Commands are documented, not a new clean-machine install or funded/device test. PASS.
