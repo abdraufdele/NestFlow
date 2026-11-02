@@ -7,6 +7,9 @@ test('confirmed history separates balances, empty window, forecasts and earnings
   await expect(history).toContainText('Incomplete lifetime history');
   await expect(history).toContainText('Reconstructed earnings: unavailable');
   await expect(history).toContainText('No confirmed supplies or withdrawals found in this window');
+  const downloadPromise = page.waitForEvent('download');
+  await history.getByRole('button', { name: 'Export confirmed events CSV' }).click();
+  expect((await downloadPromise).suggestedFilename()).toBe('nestflow-confirmed-events.csv');
   expect(await page.evaluate(() => (window as unknown as { mockState: { writes: number } }).mockState.writes)).toBe(0);
 });
 test('history failure preserves withdrawal access and retry', async ({ page }) => {
