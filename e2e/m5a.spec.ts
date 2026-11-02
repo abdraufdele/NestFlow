@@ -20,3 +20,12 @@ test('history failure preserves withdrawal access and retry', async ({ page }) =
   await page.getByRole('button', { name: 'Check withdrawal', exact: true }).click();
   await expect(page.locator('#withdraw-result')).toContainText('Checks passed as of');
 });
+
+test('stale source feed makes POL quote, net and break-even unavailable but allows withdrawal checks', async ({ page }) => {
+  await installProvider(page, { staleFeed: true }); await page.goto('/');
+  await page.getByRole('button', { name: 'Preview supply', exact: true }).click();
+  await expect(page.getByText(/No POL\/USDT conversion quote/)).toContainText('Net earnings and fee break-even are unavailable');
+  await page.getByLabel('Withdraw amount (USDT)').fill('1');
+  await page.getByRole('button', { name: 'Check withdrawal', exact: true }).click();
+  await expect(page.locator('#withdraw-result')).toContainText('Checks passed as of');
+});

@@ -5,6 +5,7 @@ import { DOCUMENTED, PRICE_ADDRESSES } from '../src/config/aave';
 import { providerAbi, poolAbi, tokenAbi, dataAbi } from '../src/config/abi';
 
 export interface MockOptions {
+  staleFeed?: boolean;
   historyFailed?: boolean;
   replacementMode?: 'repriced' | 'cancelled' | 'wrong-nonce';
   pol?: string; cash?: string; supplied?: string; allowance?: string;
@@ -16,6 +17,7 @@ export interface MockOptions {
 export async function installProvider(page: Page, options: MockOptions = {}) {
   const ray = 10n ** 27n;
   const values: Record<string, unknown> = {
+    latestRoundData: [1n, 100_000_000n, 1n, 1n, 1n],
     getPriceOracle: PRICE_ADDRESSES.oracle, BASE_CURRENCY: '0x0000000000000000000000000000000000000000', BASE_CURRENCY_UNIT: 100_000_000n, getSourceOfAsset: PRICE_ADDRESSES.oracle, getAssetPrice: 100_000_000n,
     getPool: DOCUMENTED.pool, getPoolDataProvider: DOCUMENTED.dataProvider, ADDRESSES_PROVIDER: DOCUMENTED.provider,
     getReservesList: [DOCUMENTED.underlying], getReserveTokensAddresses: [DOCUMENTED.aToken, DOCUMENTED.variableDebtToken, DOCUMENTED.variableDebtToken],
@@ -113,6 +115,7 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
             tx.input = call.data; tx.to = call.to; return hash;
           }
           if (options.simulationFailed && ['supply', 'withdraw'].includes(entry.name)) throw new Error('Simulation reverted');
+          if (entry.name === 'latestRoundData') return tuple(1n, 100_000_000n, 1n, BigInt(Math.floor(Date.now()/1000) - (options.staleFeed ? 3601 : 0)), 1n);
           if (entry.name === 'getAssetPrice') return tuple(call.data.slice(-40).toLowerCase() === '0d500b1d8e8ef31e21c99d1db9a6444d3adf1270' ? 25_000_000n : 100_000_000n);
           if (entry.name === 'balanceOf' && call.to.toLowerCase() === addresses.aToken.toLowerCase()) return tuple(state.supplied);
           if (entry.name === 'balanceOf') return tuple(call.data.slice(-40).toLowerCase() === addresses.aToken.slice(2).toLowerCase() ? options.liquidity ?? '1000000000' : state.cash);
