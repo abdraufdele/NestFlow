@@ -171,3 +171,7 @@ Explicit five-step request authorizes M5a only; M1–M4 behavior and remaining f
 - Done locally: lazy diagnostics/history with loading/reload fallback. About 20 kB diagnostics plus history chunks load separately; main chunk remains about 591 kB and still triggers Vite's warning. Further dependency chunk tuning deferred as higher scope/risk.
 
 Evidence and exact commands/results: [M5a verification](m5a-test-results.md). Remaining T2 items, observed-user sessions, full accessibility/device tests and real sends remain deferred. Backup/pre-rewrite intentionally preserves original metadata; only rewritten main is intended to be email-clean.
+
+## M5b scope update — 2 November 2026
+
+Explicit four-step request only. Done locally: deferred screen polish, README/changelog, wording sweep with change list and release checklist. [M5b verification](m5b-test-results.md) records checks and evidence; [wording review](WORDING-REVIEW.md) lists edits. [Release checklist](RELEASE-CHECKLIST.md) leaves funded-device flow, redeploy, final rules/scoring review and demo recording open. No funds, sends, send flag, deployment, publication, new dependency or further milestone. Historical inventory rows above remain baseline records, not current completion status.

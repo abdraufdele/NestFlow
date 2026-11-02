@@ -82,3 +82,5 @@ This documentation does not authorize funding or a transaction. The existing swi
 The adapter enforces **5 USDT (5_000_000 base units) per action**, covering approval, supply and withdrawal; any zero-reset approval is separate. This is not a cumulative/session cap or a POL-fee cap. No unlimited/full-balance sentinel bypasses it.
 
 Serve such an artifact only at the controlled private test URL. Public deployments must have the flag absent/false in the shell, hosting build environment and applicable `.env*` files, then be rebuilt normally. Removing the flag after building does not disable an existing artifact. Run the production guard check on the normal build before public deployment. The current project remains send-disabled; M5b performed no real sends.
+
+Release preparation: [release checklist](docs/RELEASE-CHECKLIST.md) and [wording changes](docs/WORDING-REVIEW.md).
