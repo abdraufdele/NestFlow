@@ -1,6 +1,7 @@
+import assert from 'node:assert/strict';
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { createServer } from 'node:net';
-import { createPublicClient, createWalletClient, http, parseAbi, type Address } from 'viem';
+import { createPublicClient, createWalletClient, http, parseAbi, type Address, type PublicClient } from 'viem';
 import { polygon } from 'viem/chains';
 import 'fake-indexeddb/auto';
 import { resolveAaveConfig } from '../src/config/aave';
@@ -9,7 +10,7 @@ import { approve, supply, withdraw, readPosition, readAllowance } from '../src/l
 import { readHistory } from '../src/lib/history';
 import { readPolQuote } from '../src/lib/quote';
 import { openTxStore } from '../src/lib/txStore';
-import { MAX_UINT256 } from '../src/lib/math';
+import { formatAmount, MAX_UINT256 } from '../src/lib/math';
 
 const missing = ['forge', 'anvil'].filter(tool => spawnSync(tool, ['--version'], { stdio: 'ignore', windowsHide: true }).status !== 0);
 if (missing.length) console.error(`Missing ${missing.join(', ')}. Install Foundry (forge and anvil): https://getfoundry.sh/introduction/installation/ and add its bin directory to PATH.`);
@@ -44,8 +45,49 @@ try {
   const client = createPublicClient({ chain: polygon, transport: http(local, { retryCount: 1, timeout: 30_000 }), cacheTime: 0 });
   const config = await resolveAaveConfig(client);
   console.log(`Verified Polygon config at fork block ${config.blockNumber}, reserve ${config.symbol}, decimals ${config.decimals}`);
-  const quote = await readPolQuote(client).catch(() => undefined);
-  console.log(quote ? `Verified fresh on-chain WPOL/USDT quote: ${quote.usdtPerPol} USDT base units/POL; block ${quote.blockNumber}; source updates ${quote.polUpdatedAt}/${quote.usdtUpdatedAt}` : 'POL quote unavailable: source update freshness cannot be verified within the one-hour limit. Net and break-even remain unavailable.');
+  // Real quote must succeed; never turn a failed/rate-limited fork read into a pass.
+  let usdtTimestampError: unknown;
+  const observedClient = { ...client, readContract: async (args: Parameters<PublicClient['readContract']>[0]) => {
+    try { return await client.readContract(args); }
+    catch (error) {
+      if (args.functionName === 'latestRoundData') {
+        const message = error instanceof Error ? error.message : String(error);
+        if (/429|rate.?limit|too many requests|quota|compute units/i.test(message)) { usdtTimestampError = new Error('RPC rate-limited source timestamp read; fork verification cannot pass.'); throw usdtTimestampError; }
+        usdtTimestampError = error;
+      }
+      throw error;
+    }
+  } } as unknown as PublicClient;
+  const quote = await readPolQuote(observedClient);
+  // Optional USDT timestamp errors are labeled, but upstream rate limits are not
+  // evidence of an unsupported interface and must be reported as a failed run.
+  if (usdtTimestampError instanceof Error && /429|rate.?limit|too many requests|quota|compute units/i.test(usdtTimestampError.message)) throw usdtTimestampError;
+  assert(quote.usdtPerPol > 0n);
+  assert.deepEqual(quote.feedAgeWarnings, quote.usdtUpdatedAt === null ? ['USDT price feed age unverified'] : []);
+  console.log(`Actual on-chain WPOL/USDT quote: ${quote.usdtPerPol} USDT base units/POL = ${formatAmount(quote.usdtPerPol, 6)} USDT/POL; block ${quote.blockNumber}; WPOL updated ${quote.polUpdatedAt}; USDT updated ${quote.usdtUpdatedAt ?? 'unverified'}; ${quote.feedAgeWarnings.join('; ') || 'both feed ages verified'}`);
+  // Controlled timestamp scenarios reuse real fork oracle/config/price reads.
+  // They are policy tests, not claims that both deployed feeds expose timestamps.
+  function scenarioClient(scenario: 'wpol-stale' | 'usdt-unverified' | 'both-fresh'): PublicClient {
+    return { ...client, readContract: async (args: Parameters<PublicClient['readContract']>[0]) => {
+      if (args.functionName === 'latestRoundData') {
+        const isPol = args.address?.toLowerCase() === quote.polSource.toLowerCase();
+        if (!isPol && scenario !== 'both-fresh') throw new Error('USDT latestRoundData unsupported in scenario');
+        const updated = scenario === 'wpol-stale' && isPol ? quote.observedAt - 3601n : quote.observedAt;
+        return [1n, 1n, 1n, updated, 1n];
+      }
+      return client.readContract(args);
+    } } as unknown as PublicClient;
+  }
+  await assert.rejects(readPolQuote(scenarioClient('wpol-stale')), /feed/i);
+  const unverified = await readPolQuote(scenarioClient('usdt-unverified'));
+  assert.equal(unverified.usdtPerPol, quote.usdtPerPol);
+  assert.equal(unverified.usdtUpdatedAt, null);
+  assert.deepEqual(unverified.feedAgeWarnings, ['USDT price feed age unverified']);
+  const fresh = await readPolQuote(scenarioClient('both-fresh'));
+  assert.equal(fresh.usdtPerPol, quote.usdtPerPol);
+  assert.deepEqual(fresh.feedAgeWarnings, []);
+  assert.equal(fresh.usdtUpdatedAt, quote.observedAt);
+  console.log('PASS: fork-backed timestamp scenarios: WPOL stale unavailable; USDT unverified available with label; both fresh available without label');
   const result = spawnSync('forge', ['test', '--fork-url', local, '--match-path', 'test/PolygonFork.t.sol', '-vv'], {
     env: { ...process.env, FORK_USDT: config.underlying, FORK_ATOKEN: config.aToken, FORK_POOL: config.pool },
     encoding: 'utf8', windowsHide: true, timeout: 240_000,

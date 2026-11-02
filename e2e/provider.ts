@@ -7,7 +7,7 @@ import { providerAbi, poolAbi, tokenAbi, dataAbi } from '../src/config/abi';
 
 export interface MockOptions {
   historyEvents?: boolean;
-  staleFeed?: boolean;
+  staleFeed?: boolean; usdtFeedUnsupported?: boolean; zeroQuotePrice?: boolean;
   historyFailed?: boolean;
   replacementMode?: 'repriced' | 'cancelled' | 'wrong-nonce';
   pol?: string; cash?: string; supplied?: string; allowance?: string;
@@ -122,7 +122,10 @@ export async function installProvider(page: Page, options: MockOptions = {}) {
             tx.input = call.data; tx.to = call.to; return hash;
           }
           if (options.simulationFailed && ['supply', 'withdraw'].includes(entry.name)) throw new Error('Simulation reverted');
+          if (entry.name === 'getSourceOfAsset') return tuple(call.data.slice(-40).toLowerCase() === addresses.underlying.slice(2).toLowerCase() ? addresses.underlying : addresses.aToken);
+          if (entry.name === 'latestRoundData' && options.usdtFeedUnsupported && call.to.toLowerCase() === addresses.underlying.toLowerCase()) throw new Error('USDT latestRoundData unsupported');
           if (entry.name === 'latestRoundData') return tuple(1n, 100_000_000n, 1n, BigInt(Math.floor(Date.now()/1000) - (options.staleFeed ? 3601 : 0)), 1n);
+          if (entry.name === 'getAssetPrice' && options.zeroQuotePrice) return tuple(0n);
           if (entry.name === 'getAssetPrice') return tuple(call.data.slice(-40).toLowerCase() === '0d500b1d8e8ef31e21c99d1db9a6444d3adf1270' ? 25_000_000n : 100_000_000n);
           if (entry.name === 'balanceOf' && call.to.toLowerCase() === addresses.aToken.toLowerCase()) return tuple(state.supplied);
           if (entry.name === 'balanceOf') return tuple(call.data.slice(-40).toLowerCase() === addresses.aToken.slice(2).toLowerCase() ? options.liquidity ?? '1000000000' : state.cash);

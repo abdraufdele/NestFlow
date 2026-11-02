@@ -10,8 +10,10 @@ export const quoteAbi = parseAbi([
   'function getAssetPrice(address) view returns (uint256)',
 ]);
 export const MAX_FEED_AGE_SECONDS = 3600n;
-export interface OracleQuote extends PolQuote { polUpdatedAt: bigint; usdtUpdatedAt: bigint; blockNumber: bigint; oracle: string; polSource: string; usdtSource: string }
-/** Both USD prices and source update times at one block. One-hour maximum is a
+export interface OracleQuote extends PolQuote { polUpdatedAt: bigint; usdtUpdatedAt: bigint | null; feedAgeWarnings: string[]; blockNumber: bigint; oracle: string; polSource: string; usdtSource: string }
+/** Both oracle prices and supported source timestamps at one block. WPOL
+ * freshness is required; USDT without latestRoundData is explicitly unverified.
+ * One-hour maximum is a
  * conservative product limit, not a claim about feed heartbeat guarantees.
  * Source interface: https://docs.chain.link/data-feeds/api-reference#latestrounddata */
 export async function readPolQuote(client: PublicClient): Promise<OracleQuote> {
@@ -31,10 +33,17 @@ export async function readPolQuote(client: PublicClient): Promise<OracleQuote> {
     client.readContract({ ...read, functionName: 'getAssetPrice', args: [DOCUMENTED.underlying] }),
   ]);
   if (!isAddressEqual(currency, zeroAddress) || unit !== 100_000_000n || polPrice <= 0n || usdtPrice <= 0n || isAddressEqual(polSource, zeroAddress) || isAddressEqual(usdtSource, zeroAddress)) throw new Error('Unsupported oracle price source');
-  const rounds = await Promise.all([polSource, usdtSource].map(address => client.readContract({ address, abi: quoteAbi, functionName: 'latestRoundData', blockNumber })));
-  for (const [roundId, answer, , updatedAt, answeredInRound] of rounds) {
+  const [polRound, usdtRound] = await Promise.all([
+    client.readContract({ address: polSource, abi: quoteAbi, functionName: 'latestRoundData', blockNumber }),
+    // USDT adapters need not implement AggregatorV3. This optional timestamp
+    // failure never substitutes for a failed oracle price read above.
+    client.readContract({ address: usdtSource, abi: quoteAbi, functionName: 'latestRoundData', blockNumber }).catch(() => null),
+  ]);
+  for (const [roundId, answer, , updatedAt, answeredInRound] of usdtRound ? [polRound, usdtRound] : [polRound]) {
     if (roundId === 0n || answer <= 0n || answeredInRound < roundId || updatedAt === 0n || updatedAt > block.timestamp || block.timestamp - updatedAt > MAX_FEED_AGE_SECONDS) throw new Error('Stale or invalid price feed update');
   }
-  return { polUpdatedAt: rounds[0][3], usdtUpdatedAt: rounds[1][3], usdtPerPol: (polPrice * 1_000_000n + usdtPrice - 1n) / usdtPrice,
+  return { polUpdatedAt: polRound[3], usdtUpdatedAt: usdtRound?.[3] ?? null,
+    feedAgeWarnings: usdtRound ? [] : ['USDT price feed age unverified'],
+    usdtPerPol: (polPrice * 1_000_000n + usdtPrice - 1n) / usdtPrice,
     observedAt: block.timestamp, blockNumber, oracle, polSource, usdtSource, source: AAVE_SOURCES.oracle };
 }

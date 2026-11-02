@@ -1,5 +1,7 @@
 # M5a verification — 2 November 2026 (Africa/Lagos)
 
+Historical record: the later [POL quote fix](pol-quote-test-results.md) supersedes the mandatory-USDT-timestamp policy and quote-unavailable behavior below. The original fork observations/results remain unchanged.
+
 Scope: five explicitly authorized M5a steps in C:\Users\PC\Projects\NestFlow, main. M1–M4 retained. No mainnet sends, send-flag enablement, funding, deployment, new dependency or protocol. Existing installed-device transaction limitations remain.
 
 ## Behavior and evidence

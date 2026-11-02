@@ -24,8 +24,8 @@ test('history failure preserves withdrawal access and retry', async ({ page }) =
   await expect(page.locator('#withdraw-result')).toContainText('Checks passed as of');
 });
 
-test('stale source feed makes POL quote, net and break-even unavailable but allows withdrawal checks', async ({ page }) => {
-  await installProvider(page, { staleFeed: true }); await page.goto('/');
+test('stale WPOL feed makes POL quote, net and break-even unavailable but allows withdrawal checks', async ({ page }) => {
+  await installProvider(page, { staleFeed: true, usdtFeedUnsupported: true }); await page.goto('/');
   await page.getByRole('button', { name: 'Preview supply', exact: true }).click();
   await expect(page.getByText(/No POL\/USDT conversion quote/)).toContainText('Net earnings and fee break-even are unavailable');
   await page.getByLabel('Withdraw amount (USDT)').fill('1');
@@ -56,4 +56,26 @@ test('confirmed Pool events render exact amounts and the Polygon explorer link',
   await expect(history.locator('li').nth(1)).toContainText('Withdrawal');
   await expect(history.locator('li').nth(1)).toContainText('2 USDT');
   await expect(history.getByRole('link', { name: 'Confirmed transaction' }).first()).toHaveAttribute('href', 'https://polygonscan.com/tx/0x' + 'a'.repeat(64));
+});
+
+for (const usdtFeedUnsupported of [true, false]) test(`quote restores net and break-even with USDT unsupported=${usdtFeedUnsupported}`, async ({ page }) => {
+  await installProvider(page, { usdtFeedUnsupported, allowance: '100000000' }); await page.goto('/');
+  await page.getByRole('button', { name: 'Preview supply', exact: true }).click();
+  const quote = page.getByText(/Aave oracle POL\/USDT estimate/);
+  await expect(quote).toContainText('0.25 USDT per POL');
+  // Fixture fees: 0.000384 POL supply + exit = 0.000192 USDT, rounded up.
+  await expect(quote).toContainText('Net return estimate: 0.410766 USDT');
+  await expect(quote).toContainText('Fee break-even estimate: 1 days');
+  if (usdtFeedUnsupported) await expect(quote).toContainText('USDT price feed age unverified');
+  else await expect(quote).not.toContainText('USDT price feed age unverified');
+  if (usdtFeedUnsupported) {
+    await page.setViewportSize({ width: 320, height: 850 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: 'docs/pol-quote-age-unverified.png', fullPage: true });
+  }
+});
+test('zero oracle price keeps quote unavailable despite unverified USDT age', async ({ page }) => {
+  await installProvider(page, { zeroQuotePrice: true, usdtFeedUnsupported: true }); await page.goto('/');
+  await page.getByRole('button', { name: 'Preview supply', exact: true }).click();
+  await expect(page.getByText(/No POL\/USDT conversion quote/)).toBeVisible();
 });

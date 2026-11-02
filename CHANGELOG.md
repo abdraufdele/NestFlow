@@ -1,5 +1,9 @@
 # Changelog
 
+## POL quote fix — 2 November 2026
+
+Restore same-block Aave oracle POL/USDT conversion when USDT source timestamps are unavailable, visibly label the unverified age, and retain mandatory WPOL freshness. Net/break-even estimates use the available quote and complete fees. See [verification](docs/pol-quote-test-results.md).
+
 ## Unreleased — M5b, 2 November 2026
 
 - Screen polish: one tagline, filled Connect, shared spacing/motion/state styles, phone layout and navigation targets. Supplied logo B retained unchanged.
