@@ -38,21 +38,21 @@ Job: decide whether supplying is worthwhile after costs, retain a chosen wallet 
 
 ## T1 differentiation
 
-- Spending preference: device-local target to retain in the wallet (M4 supersedes the original account/chain-scoped plan; shared across accounts, no addresses stored). Planning only; no lock, insurance, automatic transfer or assured availability.
+- Spending preference: device-local target to retain in the wallet (the transaction recovery and withdrawal review supersedes the original account/chain-scoped plan; shared across accounts, no addresses stored). Planning only; no lock, insurance, automatic transfer or assured availability.
 - Shortfall: max(0, desired payment minus confirmed wallet USDT), in base units. Offer an eligible user-approved withdrawal; explain insufficient withdrawable funds. Later payment remains separate. No automatic bill detection or atomic withdraw-and-pay claim.
 - Existing positions: discover the exact supported aToken position, including positions created elsewhere. Missing history must not prevent eligible withdrawals.
 - Diagnostics: account position, reserve state, liquidity, debt/collateral, gas and simulation where supported. Show observation block/time and specific reasons. Successful checks do not ensure future execution.
 - Independent exit: verified instructions for the exact market/account through compatible alternative access. Mark unverified routes; never require seed export or an additional integrated wallet provider.
 
-## Signature interaction: M3 selection
+## Signature interaction: wallet interface selection
 
-Live visual splits USDT between "in wallet" and "earning" and responds to the spending preference. BACKLOG.md contains option A (split bar) and B (paired vessels). The explicit 1 November 2026 M3 request selects the simpler option A and authorizes its M3 implementation; this does not assert funded-device tier completion. See docs/m3-test-results.md.
+Live visual splits USDT between "in wallet" and "earning" and responds to the spending preference. BACKLOG.md contains option A (split bar) and B (paired vessels). The explicit 1 November 2026 wallet interface request selects the simpler option A and authorizes its wallet interface implementation; this does not assert funded-device tier completion. See docs/m3-test-results.md.
 
 Show confirmed balances separately from "after proposed supply" preview. A slider cannot reallocate an existing supplied position. Raising the wallet target above current wallet funds can indicate withdrawal need; it does not move funds. No transaction on dragging. Handle zero total, stale/missing reads, invalid/out-of-range values and account changes. Provide numeric/keyboard input, text equivalents and reduced motion. Financial amounts stay bigint; normalized proportions are display-only. No fabricated earnings animation.
 
 ## Recovery and reporting
 
-- Persist {account, chainId, txHash, action, status} immediately after a hash. Namespace transaction recovery and reads by account/chain; preferences follow the device-local M4 decision; invalidate stale asynchronous responses.
+- Persist {account, chainId, txHash, action, status} immediately after a hash. Namespace transaction recovery and reads by account/chain; preferences follow the device-local preference decision from the transaction recovery and withdrawal review; invalidate stale asynchronous responses.
 - Approval != supply; hash != confirmation. Reconcile receipts, allowance and balance before retry. Never resend automatically on timeout.
 - Handle rejected/reverted/replaced/unknown/pending states, duplicate clicks, account/chain changes, RPC failure, stale data and interrupted sessions.
 - IndexedDB denial/failure must produce a clear recovery limitation, not false durability. Local storage is never balance authority.
@@ -85,17 +85,17 @@ Winner lessons are interpretations, not causal scorecards: NimJump/NimQuest emph
 
 ## Milestones and acceptance
 
-Milestones classify work; tiers authorize it. T0 spans M1–M5 and must pass applicable tests with explicit user confirmation before T1. T1 similarly precedes T2. T3 never starts unless requested; blocked ideas need an explicit policy change. Required assumptions cannot count as passing evidence.
+Milestones classify work; tiers authorize it. T0 spans core logic through reporting and polish and must pass applicable tests with explicit user confirmation before T1. T1 similarly precedes T2. T3 never starts unless requested; blocked ideas need an explicit policy change. Required assumptions cannot count as passing evidence.
 
 | Milestone | Acceptance focus |
 |---|---|
-| M1 core logic | Verified configuration, bigint arithmetic, allowance/supply/withdraw, cost model, meaningful unit/fork tests |
-| M2 Nimiq Pay host probe | Actual device provider/chain/account/balance/dialog evidence; funded tests separately authorized |
-| M3 UI | Complete T0 screens/states first; T1 preference/shortfall/signature after gate and choice |
-| M4 recovery and diagnostics | T0 durable reconciliation/failure handling; T1 detailed diagnostics after gate |
-| M5 reporting and polish | Reliable base activity, docs, useful authorized T2 reporting/polish and submission evidence |
+| Core logic and fork tests | Verified configuration, bigint arithmetic, allowance/supply/withdraw, cost model, meaningful unit/fork tests |
+| Nimiq Pay integration tests | Actual device provider/chain/account/balance/dialog evidence; funded tests separately authorized |
+| Wallet interface tests | Complete T0 screens/states first; T1 preference/shortfall/signature after gate and choice |
+| Transaction recovery and withdrawal checks | T0 durable reconciliation/failure handling; T1 detailed diagnostics after gate |
+| Reporting and polish | Reliable base activity, docs, useful authorized T2 reporting/polish and submission evidence |
 
-M1 is local/fork work; no host readiness claim until M2. No tier passes with required device/mainnet checks assumed. Continue only independent work authorized within the current tier while blocked.
+Core logic and fork testing is local/fork work; no host readiness claim until Nimiq Pay integration tests. No tier passes with required device/mainnet checks assumed. Continue only independent work authorized within the current tier while blocked.
 
 Every feature needs meaningful tests, failure-state handling and a verified-versus-assumed note. Manual/documentation features use repeatable walkthrough/review evidence rather than artificial code tests. When code exists, run typecheck/lint/tests and production build. This documentation task only needs content/policy/table/line-limit checks.
 

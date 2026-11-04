@@ -49,7 +49,7 @@ export function Diagnostics() {
     finally { setBusy(false); }
   }
   return <main className="diagnostics-screen">
-    <h1>NestFlow host diagnostics (M2)</h1>
+    <h1>NestFlow host diagnostics (Nimiq Pay integration tests)</h1>
     <p><a href="/">Return to NestFlow</a></p>
     <p>Read-only snapshots. No approve, supply, withdraw or send transaction controls. POL pays gas.</p>
     <p role="status">Nimiq SDK: {sdk}</p>

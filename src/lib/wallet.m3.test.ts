@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { assertFundedTestAmount, createWalletAdapter, isRejected, walletRequest, type WalletProvider } from './wallet';
 const account = '0x1111111111111111111111111111111111111111';
-describe('M3 wallet boundary', () => {
+describe('Wallet interface: wallet boundary', () => {
   it('connects then switches then rereads identity, on every launch', async () => {
     const calls: string[] = []; let chain = '0x1';
     const provider: WalletProvider = { request: async ({ method }) => {

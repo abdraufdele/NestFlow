@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { installProvider } from './provider';
 for (const width of [320, 1120]) for (const route of ['/', '/history', '/independent-exit', '/diagnostics']) {
-  test(`M5b ${route} at ${width}px`, async ({ page }) => {
+  test(`Design and accessibility review ${route} at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 850 });
     await installProvider(page, { historyEvents: true }); await page.goto(route);
     await expect(page.getByRole('heading').first()).toBeVisible();
@@ -21,7 +21,7 @@ for (const width of [320, 1120]) for (const route of ['/', '/history', '/indepen
     await page.screenshot({ path: `docs/m5b-${route.replaceAll('/', '') || 'overview'}-${width}.png`, fullPage: true });
   });
 }
-test('M5b disconnected primary, keyboard focus and reduced motion', async ({ page }) => {
+test('Design and accessibility review disconnected primary, keyboard focus and reduced motion', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 850 }); await page.goto('/');
   const connect = page.getByRole('button', { name: 'Connect wallet' });
   await expect(connect).not.toHaveClass(/secondary/);
@@ -32,7 +32,7 @@ test('M5b disconnected primary, keyboard focus and reduced motion', async ({ pag
   await expect(connect).toHaveCSS('transition-duration', '0s');
   await page.screenshot({ path: 'docs/m5b-disconnected.png', fullPage: true });
 });
-test('M5b error and empty states remain readable at 320px', async ({ page }) => {
+test('Design and accessibility review error and empty states remain readable at 320px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 850 });
   await installProvider(page, { historyFailed: true, cash: '0', supplied: '0' }); await page.goto('/history');
   await expect(page.getByRole('alert')).toContainText('Confirmed history unavailable');

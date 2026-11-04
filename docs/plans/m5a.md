@@ -1,4 +1,4 @@
-# M5a implementation plan
+# History, price feeds and security review implementation plan
 
 Scope: explicit five-step user request, branch main, no real sends or mainnet transactions.
 Use existing React/viem and styles; add no runtime dependencies.
@@ -9,4 +9,4 @@ Use existing React/viem and styles; add no runtime dependencies.
 4. Hygiene: npm audit runtime/dev triage; only compatible updates, no force. SECURITY.md, full reachable-history/working-tree secret/email review without printing values, MIT check. Document limitations and commit.
 5. Low-risk lazy imports for diagnostics/history with accessible loading/error fallback. Verify build/typecheck/lint/unit/browser/production/fork, update BACKLOG and verification record, commit.
 
-Verified facts and assumptions are recorded in docs/m5a-test-results.md. No funded-device claim; prior M3/M4 limitations remain.
+Verified facts and assumptions are recorded in docs/m5a-test-results.md. No funded-device claim; prior Wallet interface tests/Transaction recovery and withdrawal checks limitations remain.

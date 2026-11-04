@@ -1,9 +1,9 @@
-# M1 core implementation
+# Core logic and fork tests core implementation
 
-M1 only. The existing README, AGENTS.md, product specification and all brand
+Core logic and fork tests only. The existing README, AGENTS.md, product specification and all brand
 assets are preserved. The README's planning status is intentionally unchanged
-at the user's request. No M2 host probe, M3 screens or signature visual was built.
-The explicit M1 request includes the pure T1 spending/shortfall calculations;
+at the user's request. No Nimiq Pay integration tests host probe, Wallet interface tests screens or signature visual was built.
+The explicit Core logic and fork tests request includes the pure T1 spending/shortfall calculations;
 it does not open the remaining T1 gate.
 
 ## Reproduce
@@ -39,7 +39,7 @@ directory traversal and tsx's OS user lookup; checks were run outside that sandb
 
 | Feature | Evidence and failure handling | Scope/limit |
 |---|---|---|
-| Scaffold | React/TS/Vite, TanStack Query provider, ESLint, Vitest, MIT, lockfile; typecheck/lint/build | Minimal static M1 placeholder only |
+| Scaffold | React/TS/Vite, TanStack Query provider, ESLint, Vitest, MIT, lockfile; typecheck/lint/build | Minimal static Core logic and fork tests placeholder only |
 | Configuration | `src/config/aave.test.ts`; provider resolves Pool; reserve membership, underlying/aToken relationships, code, symbol and three decimal observations | Official address-book anchors reviewed; live on-chain call still required |
 | Reserve/account reads | `src/lib/aave.rpc.test.ts`; common observation block/time, treasury-inclusive supply cap, cash liquidity, aggregate debt and collateral flag; read errors propagate | RPC fixtures in unit tests; no device evidence |
 | Eligibility | `src/lib/aave.test.ts`; frozen supply vs withdrawal, inactive/paused, cap boundary, balance/liquidity, zero/dust/max; exact withdrawal simulation for account constraints | Successful checks describe an observation, not future execution |
@@ -48,7 +48,7 @@ directory traversal and tsx's OS user lookup; checks were run outside that sandb
 | Costs | `costPreview` keeps entry and estimated exit POL wei; conversion only with explicit USDT/POL quote source/time | Future gas/rates and conversion freshness are caller inputs, not live oracles |
 | Recovery | `src/lib/txStore.test.ts`; IndexedDB reopen, atomic duplicate guard, storage denial/failure, timeout, two confirmations, canonical block, wrong chain, revert/reject/unknown | Unit tests use fake-indexeddb; actual browser storage durability remains unverified |
 | Replacements | Verify original sender/nonce and calldata/value/destination; explicit replacement hash; reprice can confirm, cancellation rejects original action | If original metadata or hash was never observed, remain unknown; never infer failure from absence |
-| Wallet construction | `src/lib/wallet.test.ts`; injected EIP-1193 only, missing-provider error | Host compatibility/connection UI belongs to M2 |
+| Wallet construction | `src/lib/wallet.test.ts`; injected EIP-1193 only, missing-provider error | Host compatibility/connection UI belongs to Nimiq Pay integration tests |
 | Polygon fork | `test/PolygonFork.t.sol` plus `scripts/test-fork.ts`; isolated Anvil, exact approval, supply, partial/full withdrawal, viem actions and journal receipts | Implemented, not executed: required tools/RPC missing |
 
 ## Recovery contract for the later UI
@@ -150,6 +150,6 @@ by `ceil(2 * liquidityIndex / RAY)` rather than an arbitrary one-unit tolerance.
 Both partial and full balances, receipt states and zero final aToken balance
 remain checked. The fresh fork run passed these assertions.
 
-M1's requested local/on-chain-read/fork checks pass. This does not establish
+The core logic and fork tests requested local/on-chain-read/fork checks pass. This does not establish
 Nimiq Pay host/device readiness or authorize later tiers. No mainnet transaction
 was sent; fund movement occurred only inside isolated fork state.

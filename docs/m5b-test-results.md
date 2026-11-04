@@ -1,6 +1,6 @@
-# M5b verification — 2 November 2026 (Africa/Lagos)
+# Design and accessibility review verification — 2 November 2026 (Africa/Lagos)
 
-Scope: four requested steps only, C:\Users\PC\Projects\NestFlow, main. No dependency, funding, mainnet send, send-flag enablement or deployment. M1–M5a records are historical evidence, not new device verification.
+Scope: four requested steps only, C:\Users\PC\Projects\NestFlow, main. No dependency, funding, mainnet send, send-flag enablement or deployment. Core logic and fork tests–History, price feeds and security review records are historical evidence, not new device verification.
 
 ## Step 1 — design pass
 
@@ -12,7 +12,7 @@ Scope: four requested steps only, C:\Users\PC\Projects\NestFlow, main. No depend
 
 Checks: typecheck PASS; lint PASS; unit suite PASS (83/14 files); full mocked browser suite PASS (69). Strict frontend audit PASS, zero findings (`m5b-ui-audit.json`). `git diff --check` PASS. The first unit run correctly caught the old tagline assertion; updated and the complete rerun passed. A redundant verification process was stopped before it could start a competing production build; no result claimed from that interrupted process.
 
-Assumptions: mocks are synthetic. Funded installed-device approve/supply/withdraw/rejection/reload and independent Aave compatibility remain unverified. No full screen-reader/cross-device certification, user sessions or lifetime earnings verification. M5a fork evidence is retained; no contract/math/transaction behavior changed, so no new fork run is claimed. Existing Vite bundle-size warning and documented dev dependency findings remain.
+Assumptions: mocks are synthetic. Funded installed-device approve/supply/withdraw/rejection/reload and independent Aave compatibility remain unverified. No full screen-reader/cross-device certification, user sessions or lifetime earnings verification. History, price feeds and security review fork evidence is retained; no contract/math/transaction behavior changed, so no new fork run is claimed. Existing Vite bundle-size warning and documented dev dependency findings remain.
 
 Production verification: npm run test:e2e:production -- --reporter=line — PASS (1 test); invokes typecheck plus normal Vite build, verifies no eth_sendTransaction calls and disabled approval/supply/withdrawal. Final dist is the normal send-disabled artifact. Diff whitespace check rerun after removing a trailing blank line: PASS.
 
@@ -26,4 +26,4 @@ PASS: prohibited-term search across UI/docs has no matches outside the review co
 PASS: checklist walkthrough includes funded approve/supply/withdraw/rejection/reload-while-pending, cap/authorization/evidence fields, normal public redeploy and rollback, current rules/scoring sources, and demo script/recording. Future actions remain unchecked. Rules/scoring source pages opened 2 November 2026; final submission review remains pending. UTF-8 and all 31 local Markdown link targets in nine changed docs PASS; final wording scan PASS; git diff --check PASS. A first sandboxed documentation-check attempt could not find Python; the host-runtime rerun completed successfully. No funded/device run, redeploy, recording, publication or submission is claimed.
 
 ## Final verified versus assumed
-Verified locally: 83 unit tests, 69 mocked-provider browser tests, one production send-guard test, typecheck, lint, normal build, zero-finding strict UI audit, contrast calculations, all-route screenshots and documentation walkthrough. Assumed/unverified: funded installed-device transactions/recovery and independent Aave compatibility; full screen-reader/cross-device review, future economic outcomes and release readiness. No new fork run; M5a fork evidence remains historical. Final production artifact remains send-disabled.
+Verified locally: 83 unit tests, 69 mocked-provider browser tests, one production send-guard test, typecheck, lint, normal build, zero-finding strict UI audit, contrast calculations, all-route screenshots and documentation walkthrough. Assumed/unverified: funded installed-device transactions/recovery and independent Aave compatibility; full screen-reader/cross-device review, future economic outcomes and release readiness. No new fork run; History, price feeds and security review fork evidence remains historical. Final production artifact remains send-disabled.

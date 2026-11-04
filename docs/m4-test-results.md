@@ -1,7 +1,7 @@
-# M4 verification — 2 November 2026 (Africa/Lagos)
+# Transaction recovery and withdrawal checks verification — 2 November 2026 (Africa/Lagos)
 
-Scope: explicit M4 request in `C:\Users\PC\Projects\NestFlow`, branch main.
-M1–M3 commits retained; no M5/reporting or deferred visual polish. No dependencies
+Scope: explicit Transaction recovery and withdrawal checks request in `C:\Users\PC\Projects\NestFlow`, branch main.
+Core logic and fork tests–Wallet interface tests commits retained; no Reporting and polish/reporting or deferred visual polish. No dependencies
 added, no mainnet transaction, no flag enabling, no deployment, no funding.
 
 ## Host evidence and limits
@@ -16,10 +16,10 @@ unverified on that device. Mocked RPC and Anvil are not device-send evidence.
 
 | Feature | Evidence | Failure handling / limits |
 |---|---|---|
-| Launch/recovery | Existing TxStore unit tests, flow pending/reload/duplicate/revert/rejection cases, M4 replacement browser cases | Connect then switch/reread, reconcile before reads and every send; canonical receipts/two confirmations; unknown remains locked; replacement requires sender/nonce plus original call fingerprint |
-| Withdrawal diagnostics | M4 liquidity/paused/frozen/debt browser cases | Passed/failed observation timestamp for the amount; freeze alone allows withdrawal; pause blocks; debt/collateral and failed/omitted simulation explained; gas rechecked before send |
-| Manual shortfall | M4 covered/partial/insufficient/invalid/restricted/simulation browser cases | Bigint wallet comparison; fresh eligibility before suggesting; later withdrawal review and payment remain separate; no payment detection |
-| Independent exit | M4 disconnected route/browser content review | Numbered Aave Polygon V3 steps, same account/token, POL, receipt/retry warnings and config-sourced addresses/source links; no seed export; alternative host access unverified |
+| Launch/recovery | Existing TxStore unit tests, flow pending/reload/duplicate/revert/rejection cases, Transaction recovery and withdrawal checks replacement browser cases | Connect then switch/reread, reconcile before reads and every send; canonical receipts/two confirmations; unknown remains locked; replacement requires sender/nonce plus original call fingerprint |
+| Withdrawal diagnostics | Transaction recovery and withdrawal checks liquidity/paused/frozen/debt browser cases | Passed/failed observation timestamp for the amount; freeze alone allows withdrawal; pause blocks; debt/collateral and failed/omitted simulation explained; gas rechecked before send |
+| Manual shortfall | Transaction recovery and withdrawal checks covered/partial/insufficient/invalid/restricted/simulation browser cases | Bigint wallet comparison; fresh eligibility before suggesting; later withdrawal review and payment remain separate; no payment detection |
+| Independent exit | Transaction recovery and withdrawal checks disconnected route/browser content review | Numbered Aave Polygon V3 steps, same account/token, POL, receipt/retry warnings and config-sourced addresses/source links; no seed export; alternative host access unverified |
 | POL quote and economics | quote unit tests; mocked available/unavailable browser cases; actual fork oracle reads below | Optional failure preserves withdrawals; ratio of WPOL and USDT oracle prices, conservative rounding; missing fees/quote keeps net and break-even unavailable; all estimates |
 | Preferences | IndexedDB unit restore/reset/ordering tests and browser reload/reset/recovery-retention tests | Only preference and days strings; global to this device, deliberately no address/chain scoping; error limitation shown; reset preserves transaction journal |
 | Small fixes | First-read/stale-timer/native-rejection/dev-link browser cases; diagnostics rejection unit case | No stale banner before successful connected read; friendly rejection with raw error in logs; Diagnostics link only in Vite dev build |

@@ -1,12 +1,12 @@
 # NestFlow release checklist
 
-M5b preparation only — 2 November 2026 (Africa/Lagos). This checklist does not authorize funds, mainnet transactions, a deployment or publication. **Funded device tests, redeploy and demo recording have not been performed by M5b.** Keep each item open until its own evidence is attached. Local M5b completion is not a release-readiness claim.
+Design and accessibility review preparation only — 2 November 2026 (Africa/Lagos). This checklist does not authorize funds, mainnet transactions, a deployment or publication. **Funded device tests, redeploy and demo recording have not been performed by Design and accessibility review.** Keep each item open until its own evidence is attached. Local Design and accessibility review completion is not a release-readiness claim.
 
 For each run record: date/time/timezone, tester, commit, URL/artifact hash, build mode/flag, OS/device/Nimiq Pay version, account (redact for sharing), chain, expected versus observed results and evidence location. Record public transaction hashes only with consent; never keys, seeds or RPC credentials. Any failed item blocks the relevant release claim until corrected and rerun.
 
 ## 1. Establish the candidate
 
-- [ ] Confirm the intended main commit and clean worktree; read AGENTS.md, README, CHANGELOG, SECURITY and M3/M4/M5a/M5b evidence.
+- [ ] Confirm the intended main commit and clean worktree; read AGENTS.md, README, CHANGELOG, SECURITY and Wallet interface tests/Transaction recovery and withdrawal checks/History, price feeds and security review/Design and accessibility review evidence.
 - [ ] Run `npm ci`, `npm run typecheck`, `npm run lint`, `npm test`, then `npm run test:e2e -- --reporter=line`. Run browser suites sequentially.
 - [ ] Run `npm run test:e2e:production -- --reporter=line`, then `npm run build` normally. Production test must show disabled approve/supply/withdraw and zero send RPC calls. Confirm the final artifact is the normal build.
 - [ ] Review runtime/development dependency audit findings and the tracked-file/history credential scan described in SECURITY.md. Record accepted remaining limits; do not equate an audit tool with security certification.
@@ -37,10 +37,10 @@ Obtain written authorization for the exact account, Polygon 137, verified underl
 
 ## 4. Competition rules and scoring — recheck at submission
 
-Sources opened during M5b on 2 November 2026: [competition rules](https://miniappscompetition.com/rules) and [scoring](https://miniappscompetition.com/scoring). This records source availability, not acceptance or an awarded score. Revisit the current pages and linked submission dashboard before release/submission; record URL, access date and applicable cycle/version.
+Sources opened during Design and accessibility review on 2 November 2026: [competition rules](https://miniappscompetition.com/rules) and [scoring](https://miniappscompetition.com/scoring). This records source availability, not acceptance or an awarded score. Revisit the current pages and linked submission dashboard before release/submission; record URL, access date and applicable cycle/version.
 
 - [ ] Review current eligibility, deadlines, category fit, submission channel and required fields directly on the current rules/dashboard. Confirm a public MIT repository, permitted original/attributed code, no credentials and the actual framework/token integration; do not infer qualification from branding.
-- [ ] Check the requirement for a working usable app against actual funded-device evidence and the public send-disabled limitation. Resolve that readiness gap with the owner before representing the full flow as publicly usable. M5b grants no permission to enable public sends or submit.
+- [ ] Check the requirement for a working usable app against actual funded-device evidence and the public send-disabled limitation. Resolve that readiness gap with the owner before representing the full flow as publicly usable. Design and accessibility review grants no permission to enable public sends or submit.
 - [ ] Map evidence to the current scoring categories: functionality/reliability/usefulness, Nimiq Pay integration, real usage, design/UX and builder promotion. Recheck weights rather than copying old research. Record genuine observed users and feedback only; synthetic E2E traffic is not usage evidence.
 - [ ] Review description/demo claims against verified versus assumed status; attach required public links only after owner authorization. No submission, social posting or user outreach is performed by this checklist.
 
@@ -55,7 +55,7 @@ Sources opened during M5b on 2 November 2026: [competition rules](https://miniap
 
 | Item | Result | Evidence / owner / date |
 |---|---|---|
-| Local candidate checks | Pending release rerun; [M5b local evidence](m5b-test-results.md) exists | — |
+| Local candidate checks | Pending release rerun; [Design and accessibility review local evidence](m5b-test-results.md) exists | — |
 | Funded device flow | NOT RUN | — |
 | Independent exit on installed device | UNVERIFIED | — |
 | Public redeploy + smoke | NOT RUN | — |

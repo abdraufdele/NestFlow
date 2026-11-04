@@ -1,6 +1,6 @@
-# Nimiq Pay M2 manual tests
+# Nimiq Pay Nimiq Pay integration tests manual tests
 
-Status: historical M2 checklist template. Later user-reported Android connect/switch/Polygon-read observations are recorded in m3-test-results.md and m4-test-results.md; the original unfilled rows below are not evidence of a rerun. Funded installed-device sends remain NOT RUN. Local automated tests are not host evidence.
+Status: historical Nimiq Pay integration tests checklist template. Later user-reported Android connect/switch/Polygon-read observations are recorded in m3-test-results.md and m4-test-results.md; the original unfilled rows below are not evidence of a rerun. Funded installed-device sends remain NOT RUN. Local automated tests are not host evidence.
 Record date, OS/device, installed Nimiq Pay version, build commit, URL, account (redact when sharing), chain, screenshots, observed results and pass/fail for each item. Do not record keys or seed phrases.
 
 ## Load in Nimiq Pay (five steps)
@@ -24,31 +24,31 @@ Sources checked 2026-11-01:
 - [ ] Refresh before connecting: `eth_accounts` either returns addresses or an explicit disconnected/error result; it must not silently invent an account.
 - [ ] Tap Connect; reject once, record visible error/code; retry and authorize. Refresh and compare the first EVM account with the intended wallet. Do not confuse Nimiq and EVM addresses.
 - [ ] Record actual `eth_chainId` and `eth_accounts` capability results. `eth_sendTransaction` must say runtime unverified; refresh must never open a transaction/signature dialog. Invalid-parameter send calls are deliberately excluded.
-- [ ] On Polygon 137 (`0x89`), compare wallet USDT/USDT0 and POL with independent chain reads for the same account. Compare supplied USDT, debt/collateral, block and timestamp with the exact M1-configured Aave reserve, including an existing position created elsewhere. No history/import/earnings UI is in M2.
+- [ ] On Polygon 137 (`0x89`), compare wallet USDT/USDT0 and POL with independent chain reads for the same account. Compare supplied USDT, debt/collateral, block and timestamp with the exact Core logic and fork tests-configured Aave reserve, including an existing position created elsewhere. No history/import/earnings UI is in Nimiq Pay integration tests.
 - [ ] Use an account with no position: verify observed zero, distinct from a failed read. A supplied balance does not prove withdrawability.
 - [ ] Select a different EVM chain using the host if available; refresh: wrong-chain message, no Polygon balances. Request Polygon, reject once and record error, then accept and refresh. If host cannot switch chains, record that limitation, do not mark passed.
 - [ ] Use an account with USDT and zero POL: refresh shows Missing POL. A nonzero POL balance alone does not prove enough gas. Do not attempt a transaction for this test.
 - [ ] Tap Request test signature; reject the harmless plain message in the native dialog. Record the friendly visible error and the original code from console logs (often 4001; actual host behavior decides). This is message signing, not an approval or transaction. A timeout does not cancel a pending native dialog: dismiss it before retrying.
 - [ ] Disable connectivity or block RPC: failed calls/timeouts are visible independently; a failed Aave read must not become zero. Restore and refresh.
 - [ ] Change account/chain during reads and after results: events, if emitted, clear results; refresh rechecks identity. Hosts without events require manual refresh. Verify the displayed account matches the snapshot before interpreting balances.
-- [ ] Background/reopen the app and reload `/diagnostics`; repeat refresh. Record observed differences. No transaction recovery screen is implemented in M2.
+- [ ] Background/reopen the app and reload `/diagnostics`; repeat refresh. Record observed differences. No transaction recovery screen is implemented in Nimiq Pay integration tests.
 
 ## Mainnet exercise — explicit operator authorization required
 
-The diagnostics page intentionally has no transaction controls. The steps below require an operator-reviewed harness calling the existing M1 functions in `src/lib/aave.ts` through the injected wallet, inside Nimiq Pay. This checklist does not supply a transaction harness or claim the flow was exercised. Until such a harness is available, mark these items NOT RUN, not passed. Do not use an unrelated wallet as host proof. Never give a website private keys.
+The diagnostics page intentionally has no transaction controls. The steps below require an operator-reviewed harness calling the existing Core logic and fork tests functions in `src/lib/aave.ts` through the injected wallet, inside Nimiq Pay. This checklist does not supply a transaction harness or claim the flow was exercised. Until such a harness is available, mark these items NOT RUN, not passed. Do not use an unrelated wallet as host proof. Never give a website private keys.
 
 Nimiq Pay's hidden testnet setting affects Nimiq only: EVM calls still use mainnet chains. Do not use that switch as a safety boundary.
 
-- [ ] Separately authorize in writing: Polygon 137, exact account, verified token and Pool addresses from freshly resolved M1 config, maximum USDT amount and maximum POL fee budget for approval, supply and withdrawal. Example small amount: 1 USDT = `1_000_000n`, only if the operator accepts the risk and costs. Authorization is not granted by this checklist.
+- [ ] Separately authorize in writing: Polygon 137, exact account, verified token and Pool addresses from freshly resolved Core logic and fork tests config, maximum USDT amount and maximum POL fee budget for approval, supply and withdrawal. Example small amount: 1 USDT = `1_000_000n`, only if the operator accepts the risk and costs. Authorization is not granted by this checklist.
 - [ ] Review the harness before use: injected wallet only, `execution: 'explicit-mainnet'` only after that authorization, durable TxStore, fresh config resolution, receipt reconciliation before each action, exact amounts, no automatic retries. Check the native account/chain again before every approval.
-- [ ] Record baseline wallet USDT/POL, supplied balance, allowance, reserve flags/caps/liquidity and debt/collateral, at an observation block. Run M1 eligibility/simulation and gas estimation; stop on failures or a fee budget breach. Reserve POL for exit; estimates may change.
-- [ ] Approve only the exact authorized amount using M1 `approvalSteps` and `approve`. If a nonzero allowance requires reset, obtain separate approval for `approve(0)` and confirm it first. Inspect token, Pool spender, amount and gas in the native wallet dialog. Never unlimited approval.
+- [ ] Record baseline wallet USDT/POL, supplied balance, allowance, reserve flags/caps/liquidity and debt/collateral, at an observation block. Run core eligibility checks and simulation and gas estimation; stop on failures or a fee budget breach. Reserve POL for exit; estimates may change.
+- [ ] Approve only the exact authorized amount using the core library’s `approvalSteps` and `approve`. If a nonzero allowance requires reset, obtain separate approval for `approve(0)` and confirm it first. Inspect token, Pool spender, amount and gas in the native wallet dialog. Never unlimited approval.
 - [ ] Record hash immediately and persist it; wait for a successful receipt, reconcile TxStore and independently reread allowance. Approval is not supply. Unknown/pending receipt: stop and reconcile before retrying.
-- [ ] Recheck account/chain/config, supply eligibility, gas and allowance. Invoke M1 `supply` for the exact authorized amount; inspect the native dialog before approving. Persist hash, confirm receipt and reconcile; refresh diagnostics and compare wallet and supplied balance changes. A hash alone is not success.
-- [ ] Recheck withdrawal eligibility, reserve liquidity, debt/collateral and simulation; invoke M1 `withdraw` for the authorized partial amount, then, only if separately authorized, the remaining balance. Inspect recipient/account and fees. Confirm receipts and compare wallet USDT, supplied balance and POL. Supply/withdraw each require their own native consent.
+- [ ] Recheck account/chain/config, supply eligibility, gas and allowance. Invoke the core library’s `supply` for the exact authorized amount; inspect the native dialog before approving. Persist hash, confirm receipt and reconcile; refresh diagnostics and compare wallet and supplied balance changes. A hash alone is not success.
+- [ ] Recheck withdrawal eligibility, reserve liquidity, debt/collateral and simulation; invoke the core library’s `withdraw` for the authorized partial amount, then, only if separately authorized, the remaining balance. Inspect recipient/account and fees. Confirm receipts and compare wallet USDT, supplied balance and POL. Supply/withdraw each require their own native consent.
 - [ ] Capture rejection/revert/pending outcomes and verify no duplicate submission. Stop if any address, account, chain, amount or fee differs from authorization. Record actual fees and each confirmed hash; mark unavailable or untested behavior honestly.
 
-## Verified versus assumed (M2)
+## Verified versus assumed (Nimiq Pay integration tests)
 - Verified from current docs: SDK `init({ timeout })` initializes Nimiq; EVM uses injected `window.ethereum` independently.
 - Verified from current docs: account requests, message signing, sends and chain switching have native confirmation; read methods are documented.
 - Verified from current docs: Custom URL accepts a reachable URL; LAN HTTP works with secure-context limits; Nimiq testnet does not change EVM mainnet.
@@ -59,7 +59,7 @@ Nimiq Pay's hidden testnet setting affects Nimiq only: EVM calls still use mainn
 
 ## Deferred until funded
 
-No funded device sends were authorized or performed for M3. The current wallet has 0 USDT and 0 POL. Mocked-provider tests and the existing local fork exercise do not establish device transaction compatibility. Mainnet actions stay disabled in this build.
+No funded device sends were authorized or performed for Wallet interface tests. The current wallet has 0 USDT and 0 POL. Mocked-provider tests and the existing local fork exercise do not establish device transaction compatibility. Mainnet actions stay disabled in this build.
 
 - [ ] Approve: exact allowance and any zero reset, native dialog, returned hash, canonical receipt and allowance reread.
 - [ ] Supply: separate consent after approval, native send, hash/receipt, wallet and aToken balance changes.
@@ -71,11 +71,11 @@ No funded device sends were authorized or performed for M3. The current wallet h
 Before these checks, obtain separate written authorization for exact account, Polygon 137, token/Pool, maximum USDT and POL budget. Do not infer authorization from funding or this checklist.
 
 
-## M4 private funded-build switch — remains OFF
+## Transaction recovery and withdrawal checks private funded-build switch — remains OFF
 
 `VITE_ENABLE_FUNDED_TEST_SENDS` is the exact build-time flag. Unset or any value
 other than the string `true` disables real sends. We have not enabled it or sent
-any mainnet transaction for M4. Funding does not itself authorize or enable sends.
+any mainnet transaction for Transaction recovery and withdrawal checks. Funding does not itself authorize or enable sends.
 
 After separately authorizing the exact funded test in M01 above, an operator
 controlling a private build may run this in PowerShell in the project directory:
@@ -103,7 +103,7 @@ Run `npm run test:e2e:production -- --reporter=line` on the normal build and ver
 that approve/supply/withdraw stay disabled and no `eth_sendTransaction` is called.
 The e2e mock build is separate and still requires Anvil on both transports.
 
-### Funded M4 recovery walkthrough — deferred, NOT RUN
+### Funded Transaction recovery and withdrawal checks recovery walkthrough — deferred, NOT RUN
 
 1. Reopen with no remembered identity: connect, switch from observed 0x1 to
    Polygon, then re-read state and reconcile saved receipts before any action.

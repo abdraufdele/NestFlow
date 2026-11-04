@@ -64,7 +64,7 @@ export async function probe(injected?: Provider): Promise<Rows> {
     try { rows[label] = await bounded(read()); } catch (e) { rows[label] = `Failed: ${message(e)}`; }
   }
   await Promise.all([
-    capture('USDT', async () => `${formatUnits(await client.readContract({ address: DOCUMENTED.underlying, abi: tokenAbi, functionName: 'balanceOf', args: [selected] }), 6)} USDT/USDT0 (M1 configured token ${DOCUMENTED.underlying})`),
+    capture('USDT', async () => `${formatUnits(await client.readContract({ address: DOCUMENTED.underlying, abi: tokenAbi, functionName: 'balanceOf', args: [selected] }), 6)} USDT/USDT0 (configured underlying token ${DOCUMENTED.underlying})`),
     capture('POL', async () => {
       const pol = await client.getBalance({ address: selected });
       return `${formatUnits(pol, 18)} POL${pol === 0n ? ' — Missing POL: gas required; no transactions available here' : ' — Gas sufficiency not estimated by this probe'}`;
